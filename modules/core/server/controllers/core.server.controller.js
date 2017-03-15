@@ -3,12 +3,12 @@
 /**
  * Render the main application page
  */
+
 exports.renderIndex = function (req, res) {
   res.render('modules/core/server/views/index', {
     user: req.user || null
   });
 };
-
 
 /**
  * Render the server error page
@@ -26,17 +26,17 @@ exports.renderServerError = function (req, res) {
 exports.renderNotFound = function (req, res) {
 
   res.status(404).format({
-    'text/html': function () {
+    'text/html': function textHtml() {
       res.render('modules/core/server/views/404', {
         url: req.originalUrl
       });
     },
-    'application/json': function () {
+    'application/json': function applicationJson() {
       res.json({
         error: 'Path not found'
       });
     },
-    'default': function () {
+    'default': function _default() {
       res.send('Path not found');
     }
   });

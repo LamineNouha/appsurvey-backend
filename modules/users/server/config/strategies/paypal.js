@@ -3,9 +3,10 @@
 /**
  * Module dependencies.
  */
+
 var passport = require('passport'),
-  PayPalStrategy = require('passport-paypal-openidconnect').Strategy,
-  users = require('../../controllers/users.server.controller');
+    PayPalStrategy = require('passport-paypal-openidconnect').Strategy,
+    users = require('../../controllers/users.server.controller');
 
 module.exports = function (config) {
   passport.use(new PayPalStrategy({
@@ -16,8 +17,7 @@ module.exports = function (config) {
     sandbox: config.paypal.sandbox,
     passReqToCallback: true
 
-  },
-  function (req, accessToken, refreshToken, profile, done) {
+  }, function (req, accessToken, refreshToken, profile, done) {
     // Set the provider data and include tokens
     var providerData = profile._json;
     providerData.accessToken = accessToken;

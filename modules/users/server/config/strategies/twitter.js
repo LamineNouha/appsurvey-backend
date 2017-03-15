@@ -3,9 +3,10 @@
 /**
  * Module dependencies.
  */
+
 var passport = require('passport'),
-  TwitterStrategy = require('passport-twitter').Strategy,
-  users = require('../../controllers/users.server.controller');
+    TwitterStrategy = require('passport-twitter').Strategy,
+    users = require('../../controllers/users.server.controller');
 
 module.exports = function (config) {
   // Use twitter strategy
@@ -14,8 +15,7 @@ module.exports = function (config) {
     consumerSecret: config.twitter.clientSecret,
     callbackURL: config.twitter.callbackURL,
     passReqToCallback: true
-  },
-  function (req, token, tokenSecret, profile, done) {
+  }, function (req, token, tokenSecret, profile, done) {
     // Set the provider data and include tokens
     var providerData = profile._json;
     providerData.token = token;

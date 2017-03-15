@@ -6,13 +6,35 @@
 var config = require('../config'),
   chalk = require('chalk'),
   path = require('path'),
-  mongoose = require('mongoose');
+  mongoose = require('mongoose'),
+  Schema = mongoose.Schema;
 
 // Load the mongoose models
 module.exports.loadModels = function (callback) {
   // Globbing model files
   config.files.server.models.forEach(function (modelPath) {
-    require(path.resolve(modelPath));
+    var modelClazz = require(path.resolve(modelPath));
+    if(modelClazz.prototype.Type === 'Model' && modelClazz.prototype.Schema) {
+        var modelSchema = new Schema(modelClazz.prototype.Schema)
+        // load methods
+        if(modelClazz.prototype.Methods) {
+          for (var property in modelClazz.prototype.Methods) {
+            if (modelClazz.prototype.Methods.hasOwnProperty(property)) {
+                modelSchema.methods[property] = modelClazz.prototype.Methods[property]
+            }
+          }
+        }
+        // load statics
+        if(modelClazz.prototype.Statics) {
+          for (var property in modelClazz.prototype.Statics) {
+            if (modelClazz.prototype.Methods.hasOwnProperty(property)) {
+                modelSchema.statics[property] = modelClazz.prototype.Statics[property]
+            }
+          }
+        }
+
+        mongoose.model(modelClazz.name, modelSchema);
+    }
   });
 
   if (callback) callback();

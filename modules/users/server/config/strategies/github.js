@@ -3,9 +3,10 @@
 /**
  * Module dependencies.
  */
+
 var passport = require('passport'),
-  GithubStrategy = require('passport-github').Strategy,
-  users = require('../../controllers/users.server.controller');
+    GithubStrategy = require('passport-github').Strategy,
+    users = require('../../controllers/users.server.controller');
 
 module.exports = function (config) {
   // Use github strategy
@@ -14,8 +15,7 @@ module.exports = function (config) {
     clientSecret: config.github.clientSecret,
     callbackURL: config.github.callbackURL,
     passReqToCallback: true
-  },
-  function (req, accessToken, refreshToken, profile, done) {
+  }, function (req, accessToken, refreshToken, profile, done) {
     // Set the provider data and include tokens
     var providerData = profile._json;
     providerData.accessToken = accessToken;
@@ -34,7 +34,7 @@ module.exports = function (config) {
       email: profile.emails[0].value,
       username: profile.username,
       // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-      profileImageURL: (providerData.avatar_url) ? providerData.avatar_url : undefined,
+      profileImageURL: providerData.avatar_url ? providerData.avatar_url : undefined,
       // jscs:enable
       provider: 'github',
       providerIdentifierField: 'id',

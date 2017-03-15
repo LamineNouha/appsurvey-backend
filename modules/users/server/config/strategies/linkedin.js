@@ -3,9 +3,10 @@
 /**
  * Module dependencies.
  */
+
 var passport = require('passport'),
-  LinkedInStrategy = require('passport-linkedin').Strategy,
-  users = require('../../controllers/users.server.controller');
+    LinkedInStrategy = require('passport-linkedin').Strategy,
+    users = require('../../controllers/users.server.controller');
 
 module.exports = function (config) {
   // Use linkedin strategy
@@ -15,8 +16,7 @@ module.exports = function (config) {
     callbackURL: config.linkedin.callbackURL,
     passReqToCallback: true,
     profileFields: ['id', 'first-name', 'last-name', 'email-address', 'picture-url']
-  },
-  function (req, accessToken, refreshToken, profile, done) {
+  }, function (req, accessToken, refreshToken, profile, done) {
     // Set the provider data and include tokens
     var providerData = profile._json;
     providerData.accessToken = accessToken;
@@ -29,7 +29,7 @@ module.exports = function (config) {
       displayName: profile.displayName,
       email: profile.emails[0].value,
       username: profile.username,
-      profileImageURL: (providerData.pictureUrl) ? providerData.pictureUrl : undefined,
+      profileImageURL: providerData.pictureUrl ? providerData.pictureUrl : undefined,
       provider: 'linkedin',
       providerIdentifierField: 'id',
       providerData: providerData

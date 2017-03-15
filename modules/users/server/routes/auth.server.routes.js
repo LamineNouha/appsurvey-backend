@@ -3,6 +3,7 @@
 /**
  * Module dependencies
  */
+
 var passport = require('passport');
 
 module.exports = function (app) {
@@ -30,19 +31,13 @@ module.exports = function (app) {
 
   // Setting the google oauth routes
   app.route('/api/auth/google').get(users.oauthCall('google', {
-    scope: [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email'
-    ]
+    scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']
   }));
   app.route('/api/auth/google/callback').get(users.oauthCallback('google'));
 
   // Setting the linkedin oauth routes
   app.route('/api/auth/linkedin').get(users.oauthCall('linkedin', {
-    scope: [
-      'r_basicprofile',
-      'r_emailaddress'
-    ]
+    scope: ['r_basicprofile', 'r_emailaddress']
   }));
   app.route('/api/auth/linkedin/callback').get(users.oauthCallback('linkedin'));
 
