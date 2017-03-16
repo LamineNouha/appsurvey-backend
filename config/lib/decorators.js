@@ -145,8 +145,8 @@ exports.Validate = function Validate(fun, error) {
 
 		if(!target.Schema[key])
 			target.Schema[key] = {}
-
-		target.Schema[key].validate = [fun, error]
+		console.log(target[fun])
+		target.Schema[key].validate = [target[fun], error]
 
 
 	}

@@ -12,32 +12,6 @@ var mongoose = require('mongoose'),
   owasp = require('owasp-password-strength-test');
 
 
-/**
- * A Validation function for local strategy email
- */
-var validateLocalStrategyEmail = function (email) {
-  return ((this.provider !== 'local' && !this.updated) || validator.isEmail(email, { require_tld: false }));
-};
-
-/**
- * A Validation function for username
- * - at least 3 characters
- * - only a-z0-9_-.
- * - contain at least one alphanumeric character
- * - not in list of illegal usernames
- * - no consecutive dots: "." ok, ".." nope
- * - not begin or end with "."
- */
-
-var validateUsername = function(username) {
-  var usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
-  return (
-    this.provider !== 'local' ||
-    (username && usernameRegex.test(username) && config.illegalUsernames.indexOf(username) < 0)
-  );
-};
-
-
 @Model
 //@Hook('pre', 'save', hashPasswordHook)
 //@Hook('pre', 'validate', testLocalPassword)
@@ -46,10 +20,12 @@ class User {
 
 	@String
 	@Default('')
+	@Validate('validateLocalStrategyProperty', 'Please fill in your first name')
 	firstName;
 
 	@String
 	@Default('')
+	@Validate('validateLocalStrategyProperty', 'Please fill in your last name')
 	lastName;
 
 	@String
@@ -58,10 +34,12 @@ class User {
 	@String
 	@Default('')
 	@Index
+	@Validate('validateLocalStrategyEmail', 'Please fill a valid email address')
 	email;
 
 	@String
 	@Index
+	@Validate('validateUserNameFormat', 'Username Can\'t contain special characters')
 	username;
 
 	@String
@@ -87,7 +65,7 @@ class User {
 
 	@String
 	@ArrayType
-	@Required('Please provide at least one role')
+	@Default(['user'])
 	roles;
 
 	@Date
@@ -187,6 +165,44 @@ class User {
 	    }
 	  });
 	};
+
+	/**
+	 * A Validation function for local strategy email
+	 */
+	validateLocalStrategyEmail(email) {
+	  return ((this.provider !== 'local' && !this.updated) || validator.isEmail(email, { require_tld: false }));
+	};
+
+	/**
+	 * A Validation function for username
+	 * - at least 3 characters
+	 * - only a-z0-9_-.
+	 * - contain at least one alphanumeric character
+	 * - not in list of illegal usernames
+	 * - no consecutive dots: "." ok, ".." nope
+	 * - not begin or end with "."
+	 */
+
+	validateUsername(username) {
+	  var usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
+	  return (
+	    this.provider !== 'local' ||
+	    (username && usernameRegex.test(username) && config.illegalUsernames.indexOf(username) < 0)
+	  );
+	};
+
+	/**
+	 * A Validation function for local strategy properties
+	 */
+	validateLocalStrategyProperty(property) {
+	  return ((this.provider !== 'local' && !this.updated) || /^[a-zA-Z]{4,}$/.test(property));
+	};
+	/**
+	* Validate name format
+	*/
+	validateUserNameFormat(val){
+	  return /^[A-Za-z0-9_\-\.]+$/.test(val) ;
+	}
 
 }
 
