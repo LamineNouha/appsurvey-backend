@@ -7,7 +7,9 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   passport = require('passport'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  jwt = require('jsonwebtoken'),
+  config = require('../../../../../config/config');
 
 // URLs for which user can't be redirected on signin
 var noReturnUrls = [
@@ -53,23 +55,17 @@ exports.signup = function (req, res) {
  * Signin after passport authentication
  */
 exports.signin = function (req, res, next) {
-  passport.authenticate('local', function (err, user, info) {
-    if (err || !user) {
-      res.status(422).send(info);
-    } else {
-      // Remove sensitive data before login
-      user.password = undefined;
-      user.salt = undefined;
+  passport.authenticate('local', function(err, user, info) {
+   if (err) { return next(err) }
+   if (!user) {
+     return res.json(401, { error: 'message' });
+   }
 
-      req.login(user, function (err) {
-        if (err) {
-          res.status(400).send(err);
-        } else {
-          res.json(user);
-        }
-      });
-    }
-  })(req, res, next);
+   //user has authenticated correctly thus we create a JWT token
+   var token = jwt.sign({ username: 'somedata'}, config.secret.jwt);
+   res.json({ user : user, token : token });
+
+ })(req, res, next);
 };
 
 /**

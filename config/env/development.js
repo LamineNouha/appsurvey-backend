@@ -67,11 +67,11 @@ module.exports = {
     sandbox: true
   },
   secret : {
-    jwt : "this is a secret , shhh !"
+    jwt : process.env.JWT_SECRET || "this is a secret , shhh !"
   },
   mailer: {
     from: process.env.MAILER_FROM || 'MAILER_FROM',
-    to : 'jendoubizaid@gmail.com' ,
+    to : 'mail@gmail.com' ,
     options: {
       service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
       auth: {
