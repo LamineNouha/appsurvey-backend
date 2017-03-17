@@ -13,8 +13,7 @@
     "build": "babel modules_src --out-dir modules --copy-files",
     "start": "node server.js",
     "test": "node test.js",
-    "clean": "rm -rf modules",
-    "postinstall": "bower install --config.interactive=false"
+    "clean": "rm -rf modules"
   },
   "dependencies": {
     "acl": "~0.4.4",
