@@ -11,7 +11,7 @@ exports.Model = function Model(target) {
 exports.Hook = function Model(hookOrder, hookType, fun) {
 	return function(target) {
 		if(!target.prototype.Hooks) {
-			target.prototype.Hook = {}
+			target.prototype.Hooks = {}
 		}
 
 		if(hookOrder !== 'pre' && hookOrder !== 'post') {

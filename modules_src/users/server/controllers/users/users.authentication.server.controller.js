@@ -27,6 +27,8 @@ exports.signup = function (req, res) {
   // Init user and add missing fields
   var user = new User(req.body);
   user.provider = 'local';
+  // change roles
+  user.roles = ['user']
   user.displayName = user.firstName + ' ' + user.lastName;
 
   // Then save the user
@@ -55,14 +57,14 @@ exports.signup = function (req, res) {
  * Signin after passport authentication
  */
 exports.signin = function (req, res, next) {
-  passport.authenticate('local', function(err, user, info) {
+  passport.authenticate('user-local', function(err, user, info) {
    if (err) { return next(err) }
    if (!user) {
      return res.json(401, { error: 'message' });
    }
 
    //user has authenticated correctly thus we create a JWT token
-   var token = jwt.sign({ username: 'somedata'}, config.secret.jwt);
+   var token = jwt.sign(user, config.secret.jwt);
    res.json({ user : user, token : token });
 
  })(req, res, next);

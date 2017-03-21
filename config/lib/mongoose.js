@@ -32,6 +32,14 @@ module.exports.loadModels = function (callback) {
             }
           }
         }
+        // laod Hooks
+        if(modelClazz.prototype.Hooks) {
+          for(var property in modelClazz.prototype.Hooks) {
+            if(modelClazz.prototype.Hooks.hasOwnProperty(property)) {
+              modelSchema[property](modelClazz.prototype.Hooks[property].type, modelClazz.prototype[modelClazz.prototype.Hooks[property].fun])
+            }
+          }
+        }
 
         mongoose.model(modelClazz.name, modelSchema);
     }

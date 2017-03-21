@@ -13,22 +13,16 @@ var mongoose = require('mongoose'),
 
 
 @Model
-@Hook('pre', 'save', 'hashPasswordHook')
-@Hook('pre', 'validate', 'testLocalPassword')
-class User {
+//@Hook('pre', 'save', hashPasswordHook)
+//@Hook('pre', 'validate', testLocalPassword)
+//@Method('hashPassword', hashPassword, false)
+class Organization {
 
 	@String
 	@Default('')
-	@Validate('validateLocalStrategyProperty', 'Please fill in your first name')
-	firstName;
-
-	@String
-	@Default('')
-	@Validate('validateLocalStrategyProperty', 'Please fill in your last name')
-	lastName;
-
-	@String
-	displayName;
+	@Index
+	@Validate('validateLocalStrategyProperty', 'Please fill in the organization name')
+	organizationName;
 
 	@String
 	@Default('')
@@ -37,9 +31,20 @@ class User {
 	email;
 
 	@String
-	@Index
-	@Validate('validateUserNameFormat', 'Username Can\'t contain special characters')
-	username;
+	@Default('')
+	address;
+
+	@String
+	@Default('')
+	phone;
+
+	@String
+	@Default('')
+	description;
+
+	@String
+	@Default('')
+	fax;
 
 	@String
 	@Default('')
@@ -49,7 +54,7 @@ class User {
 	salt;
 
 	@String
-	@Default('modules/users/client/img/profile/default.png')
+	@Default('modules/organizations/client/img/profile/default.png')
 	profileImageURL;
 
 	@String
@@ -64,7 +69,7 @@ class User {
 
 	@String
 	@ArrayType
-	@Default(['user'])
+	@Default(['organization'])
 	roles;
 
 	@Date
@@ -75,7 +80,6 @@ class User {
 	created;
 
 	@String
-	@Default("test")
 	resetPasswordToken;
 
 	@Date
@@ -105,21 +109,21 @@ class User {
 
 
 	/**
-	 * Find possible not used username
+	 * Find possible not used OrganizationName
 	 */
 	@Static
-	findUniqueUsername(username, suffix, callback) {
+	findUniqueOrganizationName(organizationName, suffix, callback) {
 	  var _this = this;
-	  var possibleUsername = username.toLowerCase() + (suffix || '');
+	  var possibleOrganizationName = organizationName.toLowerCase() + (suffix || '');
 
 	  _this.findOne({
-	    username: possibleUsername
-	  }, function (err, user) {
+	    organizationName: possibleOrganizationName
+	  }, function (err, organization) {
 	    if (!err) {
-	      if (!user) {
-	        callback(possibleUsername);
+	      if (!organization) {
+	        callback(possibleOrganizationName);
 	      } else {
-	        return _this.findUniqueUsername(username, (suffix || 0) + 1, callback);
+	        return _this.findUniqueOrganizationName(organizationName, (suffix || 0) + 1, callback);
 	      }
 	    } else {
 	      callback(null);
@@ -182,11 +186,11 @@ class User {
 	 * - not begin or end with "."
 	 */
 
-	validateUsername(username) {
-	  var usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
+	validateOrganizationName(organizationName) {
+	  var organizationNameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
 	  return (
 	    this.provider !== 'local' ||
-	    (username && usernameRegex.test(username) && config.illegalUsernames.indexOf(username) < 0)
+	    (organizationName && organizationNameRegex.test(organizationName) && config.illegalOrganizationName.indexOf(organizationName) < 0)
 	  );
 	};
 
@@ -194,43 +198,15 @@ class User {
 	 * A Validation function for local strategy properties
 	 */
 	validateLocalStrategyProperty(property) {
-	  return ((this.provider !== 'local' && !this.updated) || property.length);
+	  return ((this.provider !== 'local' && !this.updated) || /^[A-Z]([a-zA-Z0-9]|[- @\.#&!])*$/.test(property));
 	};
-
 	/**
 	* Validate name format
 	*/
-	validateUserNameFormat(val){
-	  return  /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/.test(val);
-	}
-
-	/**
-	 * Hook a pre save method to hash the password
-	 */
-	hashPasswordHook(next) {
-	  if (this.password && this.isModified('password')) {
-	    this.salt = crypto.randomBytes(16).toString('base64');
-	    this.password = this.hashPassword(this.password);
-	  }
-
-	  next();
-	}
-
-	/**
-	 * Hook a pre validate method to test the local password
-	 */
-	testLocalPassword(next) {
-	  if (this.provider === 'local' && this.password && this.isModified('password')) {
-	    var result = owasp.test(this.password);
-	    if (result.errors.length) {
-	      var error = result.errors.join(' ');
-	      this.invalidate('password', error);
-	    }
-	  }
-
-	  next();
+	validateOrganizationNameFormat(val){
+	  return /^[A-Z]([a-zA-Z0-9]|[- @\.#&!])*$/.test(val) ;
 	}
 
 }
 
-module.exports = User
+module.exports = Organization
