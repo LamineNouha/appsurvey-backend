@@ -13,9 +13,8 @@ var mongoose = require('mongoose'),
 
 
 @Model
-//@Hook('pre', 'save', hashPasswordHook)
-//@Hook('pre', 'validate', testLocalPassword)
-//@Method('hashPassword', hashPassword, false)
+@Hook('pre', 'save', 'hashPasswordHook')
+@Hook('pre', 'validate', 'testLocalPassword')
 class Organization {
 
 	@String
@@ -205,6 +204,33 @@ class Organization {
 	*/
 	validateOrganizationNameFormat(val){
 	  return /^[A-Z]([a-zA-Z0-9]|[- @\.#&!])*$/.test(val) ;
+	}
+
+	/**
+	 * Hook a pre save method to hash the password
+	 */
+	hashPasswordHook(next) {
+	  if (this.password && this.isModified('password')) {
+	    this.salt = crypto.randomBytes(16).toString('base64');
+	    this.password = this.hashPassword(this.password);
+	  }
+
+	  next();
+	}
+
+	/**
+	 * Hook a pre validate method to test the local password
+	 */
+	testLocalPassword(next) {
+	  if (this.provider === 'local' && this.password && this.isModified('password')) {
+	    var result = owasp.test(this.password);
+	    if (result.errors.length) {
+	      var error = result.errors.join(' ');
+	      this.invalidate('password', error);
+	    }
+	  }
+
+	  next();
 	}
 
 }

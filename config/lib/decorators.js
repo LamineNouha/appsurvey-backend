@@ -75,8 +75,11 @@ exports.Default = function Default(value) {
 
 		if(!target.Schema[key])
 			target.Schema[key] = {}
-
-		target.Schema[key].default = value
+		if(typeof value === 'function') {
+				target.Schema[key].default = value()
+		} else {
+				target.Schema[key].default = value
+		}
 
 	}
 }
