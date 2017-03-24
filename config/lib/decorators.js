@@ -58,12 +58,7 @@ exports.String = function String(target, key , descriptor) {
 		if(!target.Schema[key])
 			target.Schema[key] = {}
 
-		if(target.Schema[key].type && Array.isArray(target.Schema[key].type)) {
-			target.Schema[key].type[0] = {}
-			target.Schema[key].type[0].type = String
-		} else {
-			target.Schema[key].type = String
-		}
+		target.Schema[key].type = String
 
 }
 
@@ -107,10 +102,14 @@ exports.ArrayType = function ArrayType(target, key , descriptor) {
 			target.Schema = {}
 		}
 
-		if(!target.Schema[key])
+		if(!target.Schema[key]) {
 			target.Schema[key] = {}
-
-		target.Schema[key].type = []
+      target.Schema[key] = []
+    } else {
+      var tmp = target.Schema[key]
+      target.Schema[key] = []
+      target.Schema[key][0] = tmp
+    }
 
 
 }

@@ -11,6 +11,8 @@ var _ = require('lodash'),
   multer = require('multer'),
   config = require(path.resolve('./config/config')),
   User = mongoose.model('User'),
+  Organization = mongoose.model('Organization'),
+  Event = mongoose.model('Event'),
   validator = require('validator');
 
 var whitelistedFields = ['firstName', 'lastName', 'email', 'username'];
@@ -162,3 +164,17 @@ exports.me = function (req, res) {
 
   res.json(safeUserObject || null);
 };
+
+/**
+ * Follow an organization
+ */
+exports.followOrganization = function(req, res) {
+
+}
+
+/**
+ * Interest in event
+ */
+exports.interestEvent = function(req, res) {
+  
+}
