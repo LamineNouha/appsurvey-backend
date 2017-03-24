@@ -82,11 +82,11 @@ class User {
 	resetPasswordExpires;
 
 	@ArrayType
-	@Ref('organization')
+	@Ref('Organization')
 	organizations
 
 	@ArrayType
-	@Ref('events')
+	@Ref('Event')
 	events
 
 	// ======= Methods =========

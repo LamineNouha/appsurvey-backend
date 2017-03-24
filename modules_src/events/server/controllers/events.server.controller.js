@@ -40,7 +40,7 @@ exports.read = function (req, res) {
 
   // Add a custom field to the Event, for determining if the current User is the "owner".
   // NOTE: This field is NOT persisted to the database, since it doesn't exist in the Event model.
-  event.isCurrentUserOwner = !!(req.user && article.user && article.user._id.toString() === req.user._id.toString());
+  event.isCurrentUserOwner = !!(req.user && event.organization && event.organization._id.toString() === req.user._id.toString());
 
   res.json(event);
 };
