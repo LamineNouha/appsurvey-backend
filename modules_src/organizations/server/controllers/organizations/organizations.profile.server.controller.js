@@ -13,7 +13,7 @@ var _ = require('lodash'),
   Organization = mongoose.model('Organization'),
   validator = require('validator');
 
-var whitelistedFields = ['organizationName', 'email'];
+var whitelistedFields = ['organizationName', 'email', 'address', 'phone', 'description', 'fax'];
 
 /**
  * Update organization details

@@ -20,6 +20,7 @@ class Organization {
 	@String
 	@Default('')
 	@Index
+	@Required('organizationName is required')
 	@Validate('validateLocalStrategyProperty', 'Please fill in the organization name')
 	organizationName;
 

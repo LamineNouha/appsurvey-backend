@@ -1,5 +1,7 @@
 'use strict';
 
+var mongoose = require('mongoose'),
+  Schema = mongoose.Schema;
 
 exports.Model = function Model(target) {
 		target.prototype.Type = 'Model'
@@ -63,6 +65,21 @@ exports.String = function String(target, key , descriptor) {
 			target.Schema[key].type = String
 		}
 
+}
+
+exports.Ref = function Ref(value) {
+	return function(target, key, descriptor) {
+		if(!target.Schema) {
+			target.Schema = {}
+		}
+
+		if(!target.Schema[key])
+			target.Schema[key] = {}
+
+
+		target.Schema[key].type = Schema.ObjectId
+		target.Schema[key].ref = value
+	}
 
 }
 
