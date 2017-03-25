@@ -305,7 +305,7 @@ function _signupFb(req, res, next) {
     if (config) {
       var plus = google.plus('v1');
       var OAuth2 = google.auth.OAuth2;
-      var oauth2Client = new OAuth2(config.google.appId, config.google.appSecret, config.google.redirectUri);
+      var oauth2Client = new OAuth2(config.google.clientID, config.google.clientSecret, config.google.callbackURL);
     }
 
     var googleId=req.query.googleId;
