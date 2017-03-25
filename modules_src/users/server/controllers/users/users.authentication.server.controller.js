@@ -9,7 +9,9 @@ var path = require('path'),
   passport = require('passport'),
   User = mongoose.model('User'),
   jwt = require('jsonwebtoken'),
-  config = require('../../../../../config/config');
+  config = require('../../../../../config/config'),
+  FB = require('fb'),
+  google = require('googleapis');
 
 // URLs for which user can't be redirected on signin
 var noReturnUrls = [
@@ -245,3 +247,110 @@ exports.removeOAuthProvider = function (req, res, next) {
     }
   });
 };
+
+exports.signupFb = function(req, res, next) {
+
+    var facebookId=req.query.facebookId;
+    var facebookToken=req.query.facebookToken;
+    var response={};
+    if(!facebookId || !facebookToken){
+      response.success=false;
+      response.msg='missing parameters facebookId or facebookToken';
+      return res.status(400).json(response);
+    }
+
+
+    FB.setAccessToken(facebookToken);
+
+    FB.api('me', { fields: ['id', 'name','email'] }, function (fbRes) {
+      if(!fbRes || fbRes.error) {
+        response.success=false;
+        response.msg= !fbRes ? 'error occurred' : fbRes.error;
+        return res.status(500).json(response);
+      }else{
+
+        var id=fbRes.id;
+        var name=fbRes.name;
+        var email=fbRes.email;
+        var arrNames = name.toString().split(" ");
+
+        var userProfile= {
+          firstName: arrNames[0]  ? arrNames[0] :"",
+          lastName: arrNames[1] ? arrNames[1] :"",
+          username: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
+          displayName: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
+          provider: 'facebook',
+          roles: ['user']
+        };
+
+        if(id != facebookId){
+          response.success=false;
+          response.msg='wrong facebook id';
+          return res.status(400).json(response);
+        }
+        req.body = userProfile
+
+        // do signup
+        singup(req, res)
+
+      }
+    });
+}
+
+exports.signupGoogle = function(req, res, next) {
+
+  if (config) {
+    var plus = google.plus('v1');
+    var OAuth2 = google.auth.OAuth2;
+    var oauth2Client = new OAuth2(config.google.appId, config.google.appSecret, config.google.redirectUri);
+  }
+
+  var googleId=req.query.googleId;
+    var googleToken=req.query.googleToken;
+
+    var response={};
+    if(!googleId || !googleToken){
+      response.success=false;
+      response.msg='missing parameters googleId or googleToken';
+      return res.status(400).json(response);
+    }
+
+    oauth2Client.setCredentials({
+      access_token: googleToken
+    });
+
+    plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, responseG) {
+        // handle err and response
+        if(err){
+          response.success=false;
+          response.msg=err;
+          return res.status(500).json(response);
+        }else{
+          var id=responseG.id;
+          var name=responseG.name;
+          var email=responseG.hasOwnProperty('emails') ? responseG.emails[0].value :'undefined';
+          var imageUrl=responseG.image.url.replace("sz=50", "sz=700");
+
+          var userProfile= {
+            firstName: name.givenName ? name.givenName :"",
+            lastName: name.familyName ? name.familyName :"",
+            username: typeof email != "undefined" ? email : id+'@vayetek.google.com',
+            displayName: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
+            profileImageURL: imageUrl,
+            provider: 'facebook',
+            roles: ['user']
+          };
+
+          if(id != googleId){
+            response.success=false;
+            response.msg='wrong facebook id';
+            return res.status(400).json(response);
+          }
+          req.body = userProfile
+
+          // do signup
+          singup(req, res)
+
+        }
+    });
+}
