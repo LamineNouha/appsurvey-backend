@@ -41,17 +41,10 @@ var noReturnUrls = [
           message: errorHandler.getErrorMessage(err)
         });
       } else {
-        // Remove sensitive data before login
-        user.password = undefined;
-        user.salt = undefined;
 
-        req.login(user, function (err) {
-          if (err) {
-            res.status(400).send(err);
-          } else {
-            res.json(user);
-          }
-        });
+        //user has authenticated correctly thus we create a JWT token
+        var token = jwt.sign(user, config.secret.jwt);
+        res.json({ user : user, token : token });
       }
     });
   }
@@ -281,7 +274,8 @@ function _signupFb(req, res, next) {
           username: arrNames[0]+arrNames[1],
           email: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
           provider: 'facebook',
-          roles: ['user']
+          roles: ['user'],
+          password: facebookToken
         };
 
         if(id != facebookId){
@@ -289,10 +283,18 @@ function _signupFb(req, res, next) {
           response.msg='wrong facebook id';
           return res.status(400).json(response);
         }
-        req.body = userProfile
+        User.findOne({username : userProfile.username}, function(err, user) {
+          if(!user) {
+            req.body = userProfile
 
-        // do signup
-        _signup(req, res)
+            // do signup
+            _signup(req, res)
+          } else {
+            //user has authenticated correctly thus we create a JWT token
+            var token = jwt.sign(user, config.secret.jwt);
+            res.json({ user : user, token : token });
+          }
+        })
 
       }
     });
@@ -339,7 +341,8 @@ function _signupFb(req, res, next) {
           email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
           profileImageURL: imageUrl,
           provider: 'facebook',
-          roles: ['user']
+          roles: ['user'],
+          password: googleToken
         };
 
         if(id != googleId){
@@ -347,11 +350,19 @@ function _signupFb(req, res, next) {
           response.msg='wrong facebook id';
           return res.status(400).json(response);
         }
-        req.body = userProfile
 
-        // do signup
-        _signup(req, res)
+        User.findOne({username : userProfile.username}, function(err, user) {
+          if(!user) {
+            req.body = userProfile
 
+            // do signup
+            _signup(req, res)
+          } else {
+            //user has authenticated correctly thus we create a JWT token
+            var token = jwt.sign(user, config.secret.jwt);
+            res.json({ user : user, token : token });
+          }
+        })
       }
     });
   }
