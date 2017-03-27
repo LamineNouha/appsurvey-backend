@@ -1,6 +1,6 @@
 'use strict';
 
-import { Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
+import { NumberType, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
 
 var mongoose = require('mongoose'),
 	path = require('path'),
@@ -37,6 +37,14 @@ class Organization {
 	@String
 	@Default('')
 	phone;
+
+	@NumberType
+	@Required('Latitude is required')
+	lat;
+
+	@NumberType
+	@Required('Longitude is required')
+	lon;
 
 	@String
 	@Default('')

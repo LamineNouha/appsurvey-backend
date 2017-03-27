@@ -62,6 +62,19 @@ exports.String = function String(target, key , descriptor) {
 
 }
 
+exports.NumberType = function String(target, key , descriptor) {
+
+		if(!target.Schema) {
+			target.Schema = {}
+		}
+
+		if(!target.Schema[key])
+			target.Schema[key] = {}
+
+		target.Schema[key].type = Number
+
+}
+
 exports.Ref = function Ref(value) {
 	return function(target, key, descriptor) {
 		if(!target.Schema) {
