@@ -318,57 +318,43 @@ function _signupFb(req, res, next) {
       return res.status(400).json(response);
     }
 
-    oauth2Client.getToken(googleToken, function (err, tokens) {
-      if (!err) {
-        oauth2Client.setCredentials(tokens);
+    var userInfos = jwt.decode(googleToken)
+    var id=userInfos.sub
+    var givenName=userInfos.given_name;
+    var familyName=userInfos.family_name;
+    var email=userInfos.email;
+    var imageUrl=userInfos.picture;
+    console.log(userInfos)
+    var userProfile= {
+      firstName: givenName ? givenName :"",
+      lastName: familyName ? familyName :"",
+      username: givenName+familyName + Math.random().toString(36).substring(3, 7),
+      email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
+      profileImageURL: imageUrl,
+      provider: 'facebook',
+      roles: ['user'],
+      password: googleToken
+    };
+
+    if(id != googleId){
+      response.success=false;
+      response.msg='wrong facebook id';
+      return res.status(400).json(response);
+    }
+
+    User.findOne({email : userProfile.email}, function(err, user) {
+      if(!user) {
+        req.body = userProfile
+
+        // do signup
+        _signup(req, res)
       } else {
-        console.log(err)
+        //user has authenticated correctly thus we create a JWT token
+        var token = jwt.sign(user, config.secret.jwt);
+        res.json({ user : user, token : token });
       }
-    });
+    })
 
-    plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, responseG) {
-      // handle err and response
-      if(err){
-        response.success=false;
-        response.msg=err;
-        return res.status(500).json(response);
-      }else{
-        var id=responseG.id;
-        var name=responseG.name;
-        var email=responseG.hasOwnProperty('emails') ? responseG.emails[0].value :'undefined';
-        var imageUrl=responseG.image.url.replace("sz=50", "sz=700");
-
-        var userProfile= {
-          firstName: name.givenName ? name.givenName :"",
-          lastName: name.familyName ? name.familyName :"",
-          username: name.givenName+name.familyName + Math.random().toString(36).substring(3, 7),
-          email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
-          profileImageURL: imageUrl,
-          provider: 'facebook',
-          roles: ['user'],
-          password: googleToken
-        };
-
-        if(id != googleId){
-          response.success=false;
-          response.msg='wrong facebook id';
-          return res.status(400).json(response);
-        }
-
-        User.findOne({email : userProfile.email}, function(err, user) {
-          if(!user) {
-            req.body = userProfile
-
-            // do signup
-            _signup(req, res)
-          } else {
-            //user has authenticated correctly thus we create a JWT token
-            var token = jwt.sign(user, config.secret.jwt);
-            res.json({ user : user, token : token });
-          }
-        })
-      }
-    });
   }
 
 var self = module.exports = {
