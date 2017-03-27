@@ -271,7 +271,7 @@ function _signupFb(req, res, next) {
         var userProfile= {
           firstName: arrNames[0]  ? arrNames[0] :"",
           lastName: arrNames[1] ? arrNames[1] :"",
-          username: arrNames[0]+arrNames[1],
+          username: arrNames[0]+arrNames[1] + Math.random().toString(36).substring(3, 7),
           email: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
           provider: 'facebook',
           roles: ['user'],
@@ -283,7 +283,7 @@ function _signupFb(req, res, next) {
           response.msg='wrong facebook id';
           return res.status(400).json(response);
         }
-        User.findOne({username : userProfile.username}, function(err, user) {
+        User.findOne({email : userProfile.email}, function(err, user) {
           if(!user) {
             req.body = userProfile
 
@@ -318,8 +318,12 @@ function _signupFb(req, res, next) {
       return res.status(400).json(response);
     }
 
-    oauth2Client.setCredentials({
-      access_token: googleToken
+    oauth2Client.getToken(googleToken, function (err, tokens) {
+      if (!err) {
+        oauth2Client.setCredentials(tokens);
+      } else {
+        console.log(err)
+      }
     });
 
     plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, responseG) {
@@ -337,7 +341,7 @@ function _signupFb(req, res, next) {
         var userProfile= {
           firstName: name.givenName ? name.givenName :"",
           lastName: name.familyName ? name.familyName :"",
-          username: name.givenName+name.familyName,
+          username: name.givenName+name.familyName + Math.random().toString(36).substring(3, 7),
           email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
           profileImageURL: imageUrl,
           provider: 'facebook',
@@ -351,7 +355,7 @@ function _signupFb(req, res, next) {
           return res.status(400).json(response);
         }
 
-        User.findOne({username : userProfile.username}, function(err, user) {
+        User.findOne({email : userProfile.email}, function(err, user) {
           if(!user) {
             req.body = userProfile
 
