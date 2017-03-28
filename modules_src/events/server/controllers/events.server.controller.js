@@ -5,6 +5,7 @@
  */
 var path = require('path'),
   mongoose = require('mongoose'),
+  User = mongoose.model('User'),
   Event = mongoose.model('Event'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
@@ -16,7 +17,7 @@ var whitelistedFields = ['title', 'description', 'address', 'startDate', 'endDat
 exports.create = function (req, res) {
 
   var event = new Event(req.body);
-  event.organization = req.user;
+  event.organization = mongoose.Types.ObjectId(req.user._doc._id);
 
   console.log(event)
 
