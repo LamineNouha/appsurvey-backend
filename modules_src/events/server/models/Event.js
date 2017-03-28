@@ -41,9 +41,11 @@ class Event {
 	created;
 
 	@Date
+	@Required('StartDate is required')
 	startDate;
 
 	@Date
+	@Required('EndDate is required')
 	endDate;
 
 	@Ref('Organization')
