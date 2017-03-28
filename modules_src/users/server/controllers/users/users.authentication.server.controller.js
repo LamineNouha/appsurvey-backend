@@ -41,6 +41,9 @@ var noReturnUrls = [
           message: errorHandler.getErrorMessage(err)
         });
       } else {
+        // Remove sensitive data before login
+        user.password = undefined;
+        user.salt = undefined;
 
         //user has authenticated correctly thus we create a JWT token
         var token = jwt.sign(user, config.secret.jwt);

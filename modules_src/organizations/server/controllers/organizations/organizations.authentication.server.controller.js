@@ -41,13 +41,9 @@ exports.signup = function (req, res) {
       organization.password = undefined;
       organization.salt = undefined;
 
-      req.login(organization, function (err) {
-        if (err) {
-          res.status(400).send(err);
-        } else {
-          res.json(organization);
-        }
-      });
+      //organization has authenticated correctly thus we create a JWT token
+      var token = jwt.sign(organization, config.secret.jwt);
+      res.json({ user : organization, token : token });
     }
   });
 };
