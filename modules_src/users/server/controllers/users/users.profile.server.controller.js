@@ -191,18 +191,28 @@ exports.followOrganization = function(req, res) {
  */
 exports.interestEvent = function(req, res) {
   var eventId = req.body.eventId
-  Event.findById(eventId, function(err, event) {
-      if(err || !event) {
-        res.status(400).send('Event not found');
-      } else {
-        req.user.events.push(event.id)
-        req.user.save(function(err) {
-          if(err) {
-            res.status(400).send(err);
-          } else {
-            res.json(req.user)
-          }
+  User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
+    if(err) {
+      res.status(400).send(err)
+    } else {
+      if (user.events.filter(function(e) {return e._id == eventId}).length <= 0) {
+        Event.findById(eventId, function(err, event) {
+            if(err || !event) {
+              res.status(400).send('Event not found');
+            } else {
+              user.events.push(event.id)
+              user.save(function(err) {
+                if(err) {
+                  res.status(400).send(err);
+                } else {
+                  res.json(user)
+                }
+              })
+            }
         })
+      } else {
+        res.status(300).send({"message": "Already interrested in this event"});
       }
+    }
   })
 }
