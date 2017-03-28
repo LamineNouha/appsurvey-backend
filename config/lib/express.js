@@ -18,7 +18,8 @@ var config = require('../config'),
   flash = require('connect-flash'),
   consolidate = require('consolidate'),
   path = require('path'),
-  jwt = require('express-jwt');
+  jwt = require('express-jwt'),
+  cors = require('cors');
 
 /**
  * Initialize local variables
@@ -102,6 +103,9 @@ module.exports.initMiddleware = function (app) {
       return null;
     }
   }));
+
+  // Add cors middleware
+  app.use(cors())
 
 };
 
