@@ -166,23 +166,33 @@ exports.me = function (req, res) {
 };
 
 /**
- * Follow an organization
+ * Follow organization
  */
 exports.followOrganization = function(req, res) {
   var organizationId = req.body.organizationId
-  Organization.findById(organizationId, function(err, event) {
-      if(err || !event) {
-        res.status(400).send('Organization not found');
-      } else {
-        req.user.organizations.push(organization.id)
-        req.user.save(function(err) {
-          if(err) {
-            res.status(400).send(err);
-          } else {
-            res.json(req.user)
-          }
+  User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
+    if(err) {
+      res.status(400).send(err)
+    } else {
+      if (user.organizations.filter(function(e) {return e._id == organizationId}).length <= 0) {
+        Organization.findById(organizationId, function(err, organization) {
+            if(err || !organization) {
+              res.status(400).send('Organization not found');
+            } else {
+              user.organizations.push(organization.id)
+              user.save(function(err) {
+                if(err) {
+                  res.status(400).send(err);
+                } else {
+                  res.json(user)
+                }
+              })
+            }
         })
+      } else {
+        res.status(300).send({"message": "Already following this organization"});
       }
+    }
   })
 }
 
