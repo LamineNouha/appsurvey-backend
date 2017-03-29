@@ -139,6 +139,22 @@ exports.changeProfilePicture = function (req, res) {
 };
 
 /**
+ * Show organization infos
+ */
+exports.read = function (req, res) {
+  var organizationId = req.params.organizationId
+  Organization.findOne({_id: organizationId}).sort('-created').populate('events').exec(function (err, organization) {
+    if (err || !organization) {
+      return res.status(422).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.json(organization);
+    }
+  });
+};
+
+/**
 * List of Organization
 */
 exports.list = function (req, res) {
@@ -150,7 +166,7 @@ exports.list = function (req, res) {
    } else {
      if(req.user) {
        User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
-         if(err) {
+         if(err || !user) {
            res.status(400).send(err)
          } else {
            organizations.forEach(function(part, index, array) {

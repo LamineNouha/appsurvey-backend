@@ -145,7 +145,7 @@ exports.changeProfilePicture = function (req, res) {
  */
 exports.me = function (req, res) {
   User.findOne({_id: req.user._doc._id}).populate('events').populate('organizations').exec(function(err, user) {
-    if(err) {
+    if(err || !user) {
       res.status(400).send(err)
     } else {
       res.json(user)
@@ -159,7 +159,7 @@ exports.me = function (req, res) {
 exports.followOrganization = function(req, res) {
   var organizationId = req.body.organizationId
   User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
-    if(err) {
+    if(err || !user) {
       res.status(400).send(err)
     } else {
       if (user.organizations.filter(function(e) {return e._id == organizationId}).length <= 0) {
@@ -198,7 +198,7 @@ exports.followOrganization = function(req, res) {
 exports.interestEvent = function(req, res) {
   var eventId = req.body.eventId
   User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
-    if(err) {
+    if(err || !user) {
       res.status(400).send(err)
     } else {
       if (user.events.filter(function(e) {return e._id == eventId}).length <= 0) {

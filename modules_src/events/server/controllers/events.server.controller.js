@@ -36,14 +36,16 @@ exports.create = function (req, res) {
  * Show the current event
  */
 exports.read = function (req, res) {
-  // convert mongoose document to JSON
-  var event = req.event ? req.event.toJSON() : {};
-
-  // Add a custom field to the Event, for determining if the current User is the "owner".
-  // NOTE: This field is NOT persisted to the database, since it doesn't exist in the Event model.
-  event.isCurrentUserOwner = !!(req.user && event.organization && event.organization._id.toString() === req.user._id.toString());
-
-  res.json(event);
+  var eventId = req.params.eventId
+  Event.findOne({_id: eventId}).sort('-created').populate('organization').exec(function (err, events) {
+    if (err) {
+      return res.status(422).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.json(events);
+    }
+  });
 };
 
 /**
@@ -105,7 +107,7 @@ exports.list = function (req, res) {
     } else {
       if(req.user) {
         User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
-          if(err) {
+          if(err || !user) {
             res.status(400).send(err)
           } else {
             events.forEach(function(part, index, array) {

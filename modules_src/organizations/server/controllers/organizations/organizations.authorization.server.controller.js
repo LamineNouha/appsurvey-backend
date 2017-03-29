@@ -19,26 +19,3 @@ exports.isOrganization = function(req,res,next){
      });
    }
 };
-/**
- * User middleware
- */
-exports.organizationByID = function (req, res, next, id) {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({
-      message: 'Organization is invalid'
-    });
-  }
-
-  Organization.findOne({
-    _id: id
-  }).exec(function (err, user) {
-    if (err) {
-      return next(err);
-    } else if (!organization) {
-      return next(new Error('Failed to load Organization ' + id));
-    }
-
-    req.profile = organization;
-    next();
-  });
-};

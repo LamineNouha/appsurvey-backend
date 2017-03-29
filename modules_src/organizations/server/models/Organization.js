@@ -1,6 +1,6 @@
 'use strict';
 
-import { NumberType, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
+import { Ref, NumberType, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
 
 var mongoose = require('mongoose'),
 	path = require('path'),
@@ -96,6 +96,10 @@ class Organization {
 
 	@Date
 	resetPasswordExpires;
+
+	@ArrayType
+	@Ref('Event')
+	events
 
 	// ======= Methods =========
 
