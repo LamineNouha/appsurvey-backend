@@ -103,20 +103,24 @@ exports.list = function (req, res) {
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
-        if(err) {
-          res.status(400).send(err)
-        } else {
-          events.forEach(function(part, index, array) {
-            if (user.events.filter(function(e) {return e._id == events[index]._id.toString()}).length > 0) {
-              events[index].isInterested = true
-            } else {
-              events[index].isInterested = false
-            }
-          })
-          res.json(events);
-        }
-      })
+      if(req.user) {
+        User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
+          if(err) {
+            res.status(400).send(err)
+          } else {
+            events.forEach(function(part, index, array) {
+              if (user.events.filter(function(e) {return e._id == events[index]._id.toString()}).length > 0) {
+                events[index].isInterested = true
+              } else {
+                events[index].isInterested = false
+              }
+            })
+            res.json(events);
+          }
+        })
+      } else {
+        res.json(events);
+      }
     }
   });
 };

@@ -148,20 +148,24 @@ exports.list = function (req, res) {
        message: errorHandler.getErrorMessage(err)
      });
    } else {
-     User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
-       if(err) {
-         res.status(400).send(err)
-       } else {
-         organizations.forEach(function(part, index, array) {
-           if (user.organizations.some(function(e) { return e._id == organizations[index]._id.toString() })) {
-             organizations[index].isFollowing = true
-           } else {
-             organizations[index].isFollowing = false
-           }
-         })
-         res.json(organizations);
-       }
-     })
+     if(req.user) {
+       User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
+         if(err) {
+           res.status(400).send(err)
+         } else {
+           organizations.forEach(function(part, index, array) {
+             if (user.organizations.some(function(e) { return e._id == organizations[index]._id.toString() })) {
+               organizations[index].isFollowing = true
+             } else {
+               organizations[index].isFollowing = false
+             }
+           })
+           res.json(organizations);
+         }
+       })
+     } else {
+       res.json(organizations);
+     }
    }
  });
 };
