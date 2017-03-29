@@ -139,6 +139,19 @@ exports.changeProfilePicture = function (req, res) {
 };
 
 /**
+ * Send User
+ */
+exports.me = function (req, res) {
+  Organization.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, organization) {
+    if(err || !organization) {
+      res.status(400).send(err)
+    } else {
+      res.json(organization)
+    }
+  })
+};
+
+/**
  * Show organization infos
  */
 exports.read = function (req, res) {
@@ -158,7 +171,7 @@ exports.read = function (req, res) {
 * List of Organization
 */
 exports.list = function (req, res) {
- Organization.find().sort('-created').lean().exec(function (err, organizations) {
+ Organization.find().sort('-created').populate('events').lean().exec(function (err, organizations) {
    if (err) {
      return res.status(422).send({
        message: errorHandler.getErrorMessage(err)
