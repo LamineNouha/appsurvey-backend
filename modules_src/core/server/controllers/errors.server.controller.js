@@ -23,28 +23,32 @@ var getUniqueErrorMessage = function (err) {
 exports.getErrorMessage = function (err) {
   var message = '';
   console.log(err);
-  if (err.code !== undefined) {
-    switch (err.code) {
-      case  0 :
-            message = err.message ;
-            break  ;
-      case 666 :
-        message = err.message ;
-            break ;
-      case 11000:
-      case 11001:
-        message = getUniqueErrorMessage(err);
-        break;
-      default:
+  if(err) {
+    if (err.code !== undefined) {
+      switch (err.code) {
+        case  0 :
+              message = err.message ;
+              break  ;
+        case 666 :
+          message = err.message ;
+              break ;
+        case 11000:
+        case 11001:
+          message = getUniqueErrorMessage(err);
+          break;
+        default:
 
-        message = err.message ||'Something went wrong';
-    }
-  } else {
-    for (var errName in err.errors) {
-      if (err.errors[errName].message) {
-        message = err.errors[errName].message;
+          message = err.message ||'Something went wrong';
+      }
+    } else {
+      for (var errName in err.errors) {
+        if (err.errors[errName].message) {
+          message = err.errors[errName].message;
+        }
       }
     }
+  } else {
+    message = "Error"
   }
 
   return message;

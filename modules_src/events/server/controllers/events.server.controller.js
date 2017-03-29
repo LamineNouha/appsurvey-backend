@@ -24,7 +24,7 @@ exports.create = function (req, res) {
   event.save(function (err) {
     if (err) {
       return res.status(422).send({
-        message: errorHandler.getErrorMessage(err)
+        message: "Event exist"
       });
     } else {
       res.json(event);
@@ -40,7 +40,7 @@ exports.read = function (req, res) {
   Event.findOne({_id: eventId}).sort('-created').populate('organization').exec(function (err, events) {
     if (err) {
       return res.status(422).send({
-        message: errorHandler.getErrorMessage(err)
+        message: "Cannot find event"
       });
     } else {
       res.json(events);
@@ -63,7 +63,7 @@ exports.update = function (req, res) {
     event.save(function (err) {
       if (err) {
         return res.status(422).send({
-          message: errorHandler.getErrorMessage(err)
+          message: "Cannot update event"
         });
       } else {
         res.json(event);
@@ -87,7 +87,7 @@ exports.delete = function (req, res) {
   event.remove(function (err) {
     if (err) {
       return res.status(422).send({
-        message: errorHandler.getErrorMessage(err)
+        message: "Cannot delete event"
       });
     } else {
       res.json(event);
@@ -102,7 +102,7 @@ exports.list = function (req, res) {
   Event.find().sort('-created').lean().populate('organization').exec(function (err, events) {
     if (err) {
       return res.status(422).send({
-        message: errorHandler.getErrorMessage(err)
+        message: "Cannot list events"
       });
     } else {
       if(req.user) {
