@@ -172,7 +172,15 @@ exports.followOrganization = function(req, res) {
                 if(err) {
                   res.status(400).send(err);
                 } else {
-                  res.json(user)
+                  console.log(organization.nbFollowers)
+                  organization.nbFollowers += 1;
+                  organization.save(function(err) {
+                    if(err) {
+                      res.status(400).send(err);
+                    } else {
+                      res.json(user)
+                    }
+                  })
                 }
               })
             }
