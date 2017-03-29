@@ -9,7 +9,7 @@ var path = require('path'),
   Event = mongoose.model('Event'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
-var whitelistedFields = ['title', 'description', 'address', 'startDate', 'endDate', 'nbInterested'];
+var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
 
 /**
  * Create an event
@@ -97,13 +97,26 @@ exports.delete = function (req, res) {
  * List of Event
  */
 exports.list = function (req, res) {
-  Event.find().sort('-created').populate('organization').exec(function (err, events) {
+  Event.find().sort('-created').lean().populate('organization').exec(function (err, events) {
     if (err) {
       return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.json(events);
+      User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
+        if(err) {
+          res.status(400).send(err)
+        } else {
+          events.forEach(function(part, index, array) {
+            if (user.events.filter(function(e) {return e._id == events[index]._id.toString()}).length > 0) {
+              events[index].isInterested = true
+            } else {
+              events[index].isInterested = false
+            }
+          })
+          res.json(events);
+        }
+      })
     }
   });
 };

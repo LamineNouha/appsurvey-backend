@@ -144,25 +144,13 @@ exports.changeProfilePicture = function (req, res) {
  * Send User
  */
 exports.me = function (req, res) {
-  // Sanitize the user - short term solution. Copied from core.server.controller.js
-  // TODO create proper passport mock: See https://gist.github.com/mweibel/5219403
-  var safeUserObject = null;
-  if (req.user) {
-    safeUserObject = {
-      displayName: validator.escape(req.user.displayName),
-      provider: validator.escape(req.user.provider),
-      username: validator.escape(req.user.username),
-      created: req.user.created.toString(),
-      roles: req.user.roles,
-      profileImageURL: req.user.profileImageURL,
-      email: validator.escape(req.user.email),
-      lastName: validator.escape(req.user.lastName),
-      firstName: validator.escape(req.user.firstName),
-      additionalProvidersData: req.user.additionalProvidersData
-    };
-  }
-
-  res.json(safeUserObject || null);
+  User.findOne({_id: req.user._doc._id}).populate('events').populate('organizations').exec(function(err, user) {
+    if(err) {
+      res.status(400).send(err)
+    } else {
+      res.json(user)
+    }
+  })
 };
 
 /**
@@ -215,7 +203,15 @@ exports.interestEvent = function(req, res) {
                 if(err) {
                   res.status(400).send(err);
                 } else {
-                  res.json(user)
+                  console.log(event.nbInterested)
+                  event.nbInterested += 1;
+                  event.save(function(err) {
+                    if(err) {
+                      res.status(400).send(err);
+                    } else {
+                      res.json(user)
+                    }
+                  })
                 }
               })
             }

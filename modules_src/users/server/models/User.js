@@ -39,6 +39,7 @@ class User {
 	@String
 	@Index
 	@Validate('validateUserNameFormat', 'Username Can\'t contain special characters')
+	@Required('Username is required')
 	username;
 
 	@String

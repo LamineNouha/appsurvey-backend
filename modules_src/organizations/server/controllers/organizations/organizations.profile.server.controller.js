@@ -10,6 +10,7 @@ var _ = require('lodash'),
   mongoose = require('mongoose'),
   multer = require('multer'),
   config = require(path.resolve('./config/config')),
+  User = mongoose.model('User'),
   Organization = mongoose.model('Organization'),
   validator = require('validator');
 
@@ -138,27 +139,29 @@ exports.changeProfilePicture = function (req, res) {
 };
 
 /**
- * Send Organization
- */
-exports.me = function (req, res) {
-  // Sanitize the user - short term solution. Copied from core.server.controller.js
-  // TODO create proper passport mock: See https://gist.github.com/mweibel/5219403
-  var safeOrganizationObject = null;
-  if (req.organization) {
-    safeOrganizationObject = {
-      organizationName: validator.escape(req.organization.organizationName),
-      address: validator.escape(req.organization.address),
-      phone: validator.escape(req.organization.phone),
-      description: validator.escape(req.organization.description),
-      fax: validator.escape(req.organization.fax),
-      provider: validator.escape(req.organization.provider),
-      created: req.user.created.toString(),
-      roles: req.organization.roles,
-      profileImageURL: req.organization.profileImageURL,
-      email: validator.escape(req.organization.email),
-      additionalProvidersData: req.organization.additionalProvidersData
-    };
-  }
-
-  res.json(safeOrganizationObject || null);
+* List of Organization
+*/
+exports.list = function (req, res) {
+ Organization.find().sort('-created').lean().exec(function (err, organizations) {
+   if (err) {
+     return res.status(422).send({
+       message: errorHandler.getErrorMessage(err)
+     });
+   } else {
+     User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
+       if(err) {
+         res.status(400).send(err)
+       } else {
+         organizations.forEach(function(part, index, array) {
+           if (user.organizations.some(function(e) { return e._id == organizations[index]._id.toString() })) {
+             organizations[index].isFollowing = true
+           } else {
+             organizations[index].isFollowing = false
+           }
+         })
+         res.json(organizations);
+       }
+     })
+   }
+ });
 };

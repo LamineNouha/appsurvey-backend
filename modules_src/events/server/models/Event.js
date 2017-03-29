@@ -1,6 +1,6 @@
 'use strict';
 
-import { Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
+import { NumberType, Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
 
 var mongoose = require('mongoose'),
 	path = require('path'),
@@ -30,8 +30,24 @@ class Event {
 	@Validate('validateNotEmptyProperty', 'Please fill in the event description')
 	description;
 
+	@NumberType
+	@Required('Latitude is required')
+	lat;
+
+	@NumberType
+	@Required('Longitude is required')
+	lon;
+
 	@String
 	eventImageURL;
+
+	@String
+	@Required('The capacity is required')
+	capacity;
+
+	@NumberType
+	@Default(0)
+	nbInterested;
 
 	@Date
 	updated;

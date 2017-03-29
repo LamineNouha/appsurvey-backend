@@ -46,6 +46,10 @@ class Organization {
 	@Required('Longitude is required')
 	lon;
 
+	@NumberType
+	@Default(0)
+	nbFollowers;
+
 	@String
 	@Default('')
 	description;
