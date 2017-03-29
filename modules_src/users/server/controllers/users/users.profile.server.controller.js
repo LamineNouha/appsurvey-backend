@@ -225,7 +225,31 @@ exports.interestEvent = function(req, res) {
             }
         })
       } else {
-        res.status(300).send({"message": "Already interrested in this event"});
+        Event.findById(eventId, function(err, event) {
+            if(err || !event) {
+              res.status(400).send('Event not found');
+            } else {
+              user.events = user.events.filter(function(item) {
+                console.log(item._id + "  " + eventId + "   " + (item._id != eventId))
+                return item._id != eventId
+              })
+              user.save(function(err) {
+                if(err) {
+                  res.status(400).send(err);
+                } else {
+                  console.log(event.nbInterested)
+                  event.nbInterested -= 1;
+                  event.save(function(err) {
+                    if(err) {
+                      res.status(400).send(err);
+                    } else {
+                      res.json(user)
+                    }
+                  })
+                }
+              })
+            }
+        })
       }
     }
   })
