@@ -15,7 +15,7 @@ var _ = require('lodash'),
   Event = mongoose.model('Event'),
   validator = require('validator');
 
-var whitelistedFields = ['firstName', 'lastName', 'email', 'username'];
+var whitelistedFields = ['firstName', 'lastName', 'email'];
 
 /**
  * Update user details

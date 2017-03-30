@@ -19,4 +19,5 @@ module.exports = function (app) {
 
   // Finish by binding the event middleware
   app.param('eventId', events.eventByID);
+  app.route('/api/events/:eventId/picture').post(events.changeEventPicture);
 };

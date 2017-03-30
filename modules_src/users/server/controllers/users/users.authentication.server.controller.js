@@ -151,28 +151,12 @@ var noReturnUrls = [
           return done(err);
         } else {
           if (!user) {
-            var possibleUsername = providerUserProfile.username || ((providerUserProfile.email) ? providerUserProfile.email.split('@')[0] : '');
 
-            User.findUniqueUsername(possibleUsername, null, function (availableUsername) {
-              user = new User({
-                firstName: providerUserProfile.firstName,
-                lastName: providerUserProfile.lastName,
-                username: availableUsername,
-                displayName: providerUserProfile.displayName,
-                profileImageURL: providerUserProfile.profileImageURL,
-                provider: providerUserProfile.provider,
-                providerData: providerUserProfile.providerData
-              });
+            user.email = providerUserProfile.email;
 
-              // Email intentionally added later to allow defaults (sparse settings) to be applid.
-              // Handles case where no email is supplied.
-              // See comment: https://github.com/meanjs/mean/pull/1495#issuecomment-246090193
-              user.email = providerUserProfile.email;
-
-              // And save the user
-              user.save(function (err) {
-                return done(err, user, info);
-              });
+            // And save the user
+            user.save(function (err) {
+              return done(err, user, info);
             });
           } else {
             return done(err, user, info);
@@ -274,7 +258,6 @@ function _signupFb(req, res, next) {
         var userProfile= {
           firstName: arrNames[0]  ? arrNames[0] :"",
           lastName: arrNames[1] ? arrNames[1] :"",
-          username: arrNames[0]+arrNames[1] + Math.random().toString(36).substring(3, 7),
           email: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
           provider: 'facebook',
           roles: ['user'],
@@ -331,7 +314,6 @@ function _signupFb(req, res, next) {
     var userProfile= {
       firstName: givenName ? givenName :"",
       lastName: familyName ? familyName :"",
-      username: givenName+familyName + Math.random().toString(36).substring(3, 7),
       email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
       profileImageURL: imageUrl,
       provider: 'facebook',

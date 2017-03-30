@@ -6,9 +6,11 @@
 var path = require('path'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
+  multer = require('multer'),
   Event = mongoose.model('Event'),
   Organization = mongoose.model('Organization'),
-  errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
+  errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
+  config = require(path.resolve('./config/config'));
 
 var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
 
@@ -147,6 +149,81 @@ exports.list = function (req, res) {
       }
     }
   });
+};
+
+/**
+ * Update event picture
+ */
+exports.changeEventPicture = function (req, res) {
+  var organization = req.user;
+  var eventId = req.params.eventId;
+  console.log(eventId)
+  // Filtering to upload only images
+  var multerConfig = config.uploads.eventUpload;
+  multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
+  var upload = multer(multerConfig).single('newEventPicture');
+
+  Event.findOne({_id : eventId}).populate('organization').exec(function(err, event) {
+    if(err || !event) {
+      res.status(400).send("Error")
+    } else {
+      if(event.organization._id.toString() == organization._doc._id) {
+        console.log(event)
+        uploadImage(event)
+          .then(updateEvent)
+          .then(null, deleteOldImage.bind(event.eventImageURL))
+          .then(function () {
+            res.json(event);
+          })
+          .catch(function (err) {
+            res.status(422).send(err);
+          });
+      } else {
+        res.status(400).send("You are not the orwner of the event")
+      }
+    }
+  })
+
+
+  function uploadImage (event) {
+    return new Promise(function (resolve, reject) {
+      upload(req, res, function (uploadError) {
+        if (uploadError) {
+          reject(errorHandler.getErrorMessage(uploadError));
+        } else {
+          resolve(event);
+        }
+      });
+    });
+  }
+
+  function updateEvent (event) {
+    return new Promise(function (resolve, reject) {
+      event.eventImageURL = multerConfig.dest + req.file.filename;
+      event.save(function (err, theevent) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(theevent);
+        }
+      });
+    });
+  }
+
+  function deleteOldImage (theevent, existingImageUrl) {
+    return new Promise(function (resolve, reject) {
+      fs.unlink(existingImageUrl, function (unlinkError) {
+        if (unlinkError) {
+          console.log(unlinkError);
+          reject({
+            message: 'Error occurred while deleting old profile picture'
+          });
+        } else {
+          resolve(theevent);
+        }
+      });
+    });
+  }
 };
 
 /**

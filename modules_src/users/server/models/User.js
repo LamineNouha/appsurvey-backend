@@ -37,11 +37,6 @@ class User {
 	email;
 
 	@String
-	@Index
-	@Validate('validateUserNameFormat', 'Username Can\'t contain special characters')
-	username;
-
-	@String
 	@Default('')
 	password;
 
@@ -111,31 +106,6 @@ class User {
 	  }
 	};
 
-
-	/**
-	 * Find possible not used username
-	 */
-	@Static
-	findUniqueUsername(username, suffix, callback) {
-	  var _this = this;
-	  var possibleUsername = username.toLowerCase() + (suffix || '');
-
-	  _this.findOne({
-	    username: possibleUsername
-	  }, function (err, user) {
-	    if (!err) {
-	      if (!user) {
-	        callback(possibleUsername);
-	      } else {
-	        return _this.findUniqueUsername(username, (suffix || 0) + 1, callback);
-	      }
-	    } else {
-	      callback(null);
-	    }
-	  });
-	};
-
-
 	/**
 	* Generates a random passphrase that passes the owasp test
 	* Returns a promise that resolves with the generated passphrase, or rejects with an error if something goes wrong.
@@ -181,36 +151,11 @@ class User {
 	};
 
 	/**
-	 * A Validation function for username
-	 * - at least 3 characters
-	 * - only a-z0-9_-.
-	 * - contain at least one alphanumeric character
-	 * - not in list of illegal usernames
-	 * - no consecutive dots: "." ok, ".." nope
-	 * - not begin or end with "."
-	 */
-
-	validateUsername(username) {
-	  var usernameRegex = /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/;
-	  return (
-	    this.provider !== 'local' ||
-	    (username && usernameRegex.test(username) && config.illegalUsernames.indexOf(username) < 0)
-	  );
-	};
-
-	/**
 	 * A Validation function for local strategy properties
 	 */
 	validateLocalStrategyProperty(property) {
 	  return ((this.provider !== 'local' && !this.updated) || property.length);
 	};
-
-	/**
-	* Validate name format
-	*/
-	validateUserNameFormat(val){
-	  return  /^(?=[\w.-]+$)(?!.*[._-]{2})(?!\.)(?!.*\.$).{3,34}$/.test(val);
-	}
 
 	/**
 	 * Hook a pre save method to hash the password

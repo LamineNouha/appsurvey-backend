@@ -67,7 +67,7 @@ class Organization {
 
 	@String
 	@Default('modules/organizations/client/img/profile/default.png')
-	profileImageURL;
+	organizationImageURL;
 
 	@String
 	@Required('Provider is required')
