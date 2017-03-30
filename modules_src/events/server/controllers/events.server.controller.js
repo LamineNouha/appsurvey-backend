@@ -7,6 +7,7 @@ var path = require('path'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
   Event = mongoose.model('Event'),
+  Organization = mongoose.model('Organization'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
 var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
@@ -15,21 +16,42 @@ var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capac
  * Create an event
  */
 exports.create = function (req, res) {
+  if(req.user) {
+    var event = new Event(req.body);
+    Organization.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, organization) {
+      if(err || !organization) {
+        return res.status(422).send({
+          message: "Organization not found"
+        });
+      } else {
+        event.organization = mongoose.Types.ObjectId(req.user._doc._id);
 
-  var event = new Event(req.body);
-  event.organization = mongoose.Types.ObjectId(req.user._doc._id);
+        event.save(function (err) {
+          if (err) {
+            return res.status(400).send({
+              message: "Event exist"
+            });
+          } else {
+            organization.events.push(event)
+            organization.save(function(err) {
+              if(err) {
+                return res.status(400).send({
+                  message: "Cant save organization"
+                });
+              } else {
+                res.json(event);
+              }
+            })
+          }
+        });
+      }
+    })
 
-  console.log(event)
-
-  event.save(function (err) {
-    if (err) {
-      return res.status(422).send({
-        message: "Event exist"
-      });
-    } else {
-      res.json(event);
-    }
-  });
+  } else {
+    return res.status(403).send({
+      message: "You need to authenticated"
+    });
+  }
 };
 
 /**
