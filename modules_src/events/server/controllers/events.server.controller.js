@@ -161,6 +161,7 @@ exports.changeEventPicture = function (req, res) {
     console.log(eventId)
     // Filtering to upload only images
     var multerConfig = config.uploads.eventUpload;
+    console.log(multerConfig)
     multerConfig.fileFilter = require(path.resolve('./config/lib/multer')).imageFileFilter;
     var upload = multer(multerConfig).single('file');
 

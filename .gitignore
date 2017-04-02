@@ -15,22 +15,10 @@ public/lib/
 app/tests/coverage/
 .bower-*/
 .idea/
-coverage/
-**/imageads/**/img/
-**/videoads/**/img/
-**/coupons/**/img/
-**/gifts/**/img/
-**/temp-img/
-**/vid/
-**/pdf/
-**/thumb-mobile/
-**/thumb-tab/
-!temp.jpg
 
 # MEAN.js app and assets
 # ======================
 public/dist/
-uploads
 modules/users/client/img/profile/uploads
 config/env/local.js
 *.pem
