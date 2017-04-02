@@ -243,7 +243,7 @@ function _signupFb(req, res, next) {
 
     FB.setAccessToken(facebookToken);
 
-    FB.api('me', { fields: ['id', 'name','email'] }, function (fbRes) {
+    FB.api('me', { fields: ['id', 'name','email', 'picture'] }, function (fbRes) {
       if(!fbRes || fbRes.error) {
         response.success=false;
         response.msg= !fbRes ? 'error occurred' : fbRes.error;
@@ -254,6 +254,7 @@ function _signupFb(req, res, next) {
         var name=fbRes.name;
         var email=fbRes.email;
         var arrNames = name.toString().split(" ");
+        var profileImageURL = fbRes.picture.url;
 
         var userProfile= {
           firstName: arrNames[0]  ? arrNames[0] :"",
@@ -261,7 +262,8 @@ function _signupFb(req, res, next) {
           email: typeof email != "undefined" ? email : id+'@vayetek.facebook.com',
           provider: 'facebook',
           roles: ['user'],
-          password: facebookToken
+          password: facebookToken,
+          profileImageURL: profileImageURL
         };
 
         if(id != facebookId){
@@ -310,7 +312,6 @@ function _signupFb(req, res, next) {
     var familyName=userInfos.family_name;
     var email=userInfos.email;
     var imageUrl=userInfos.picture;
-    console.log(userInfos)
     var userProfile= {
       firstName: givenName ? givenName :"",
       lastName: familyName ? familyName :"",
