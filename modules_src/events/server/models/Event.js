@@ -67,6 +67,11 @@ class Event {
 	@Ref('Organization')
 	organization;
 
+	@ArrayType
+	@Ref('Category')
+	@Required('Categories are required')
+	categories;
+
 	// ======= Methods =========
 	validateNotEmptyProperty(val) {
 		return val.length;

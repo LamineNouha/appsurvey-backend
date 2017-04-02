@@ -10,7 +10,7 @@ exports.Model = function Model(target) {
 		}
 }
 
-exports.Hook = function Model(hookOrder, hookType, fun) {
+exports.Hook = function Hook(hookOrder, hookType, fun) {
 	return function(target) {
 		if(!target.prototype.Hooks) {
 			target.prototype.Hooks = {}
@@ -41,7 +41,24 @@ exports.Method = function Method(target, key, descriptor) {
 
 }
 
-exports.Static = function Method(target, key, descriptor) {
+exports.Virtual = function Virtual(ref, localField, foreignField) {
+  return function(target, key, descriptor) {
+  	if(!target.Virtuals) {
+  		target.Virtuals = {}
+  	}
+
+  	target.Virtuals[key] = {
+      ref: ref,
+      localField: localField,
+      foreignField: foreignField,
+      toJSON : {virtuals : true},
+      toObject : {virtuals:true}
+    }
+
+  }
+}
+
+exports.Static = function Static(target, key, descriptor) {
 	if(!target.Statics) {
 		target.Statics = {}
 	}
@@ -62,7 +79,7 @@ exports.String = function String(target, key , descriptor) {
 
 }
 
-exports.NumberType = function String(target, key , descriptor) {
+exports.NumberType = function NumberType(target, key , descriptor) {
 
 		if(!target.Schema) {
 			target.Schema = {}

@@ -40,6 +40,14 @@ module.exports.loadModels = function (callback) {
             }
           }
         }
+        // laod Virtuals
+        if(modelClazz.prototype.Virtuals) {
+          for(var property in modelClazz.prototype.Virtuals) {
+            if(modelClazz.prototype.Virtuals.hasOwnProperty(property)) {
+              modelSchema.virtual(property, modelClazz.prototype.Virtuals[property])
+            }
+          }
+        }
 
         mongoose.model(modelClazz.name, modelSchema);
     }
