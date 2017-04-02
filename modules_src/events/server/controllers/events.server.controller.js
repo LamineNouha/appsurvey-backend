@@ -123,8 +123,11 @@ exports.delete = function (req, res) {
  * List of Event
  */
 exports.list = function (req, res) {
-  Event.find().sort('-created').lean().populate('organization').exec(function (err, events) {
+  var skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  var limit = req.query.limit ? parseInt(req.query.limit) : 15;
+  Event.find().sort('-created').skip(skip).limit(limit).lean().populate('organization').exec(function (err, events) {
     if (err) {
+      console.log(err)
       return res.status(422).send({
         message: "Cannot list events"
       });
