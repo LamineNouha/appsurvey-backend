@@ -144,7 +144,7 @@ exports.changeProfilePicture = function (req, res) {
  * Send User
  */
 exports.me = function (req, res) {
-  User.findOne({_id: req.user._doc._id}).populate('events', null, { endDate: { $gt: new Date() } }, { populate: 'organization', sort: { 'startDate': -1 } }).populate('organizations').exec(function(err, user) {
+  User.findOne({_id: req.user._doc._id}).populate('events', null, { endDate: { $gt: new Date() } }, { populate: 'organization', sort: { 'startDate': 1 } }).populate('organizations').exec(function(err, user) {
     if(err || !user) {
       res.status(400).send(err)
     } else {
