@@ -10,7 +10,8 @@ var path = require('path'),
   Event = mongoose.model('Event'),
   Organization = mongoose.model('Organization'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
-  config = require(path.resolve('./config/config'));
+  config = require(path.resolve('./config/config')),
+  _ = require('underscore');
 
 var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
 

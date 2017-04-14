@@ -317,7 +317,7 @@ function _signupFb(req, res, next) {
       lastName: familyName ? familyName :"",
       email: typeof email != "undefined" ? email : id+'@vayetek.google.com',
       profileImageURL: imageUrl,
-      provider: 'facebook',
+      provider: 'google',
       roles: ['user'],
       password: googleToken
     };
