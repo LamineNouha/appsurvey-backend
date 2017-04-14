@@ -21,7 +21,7 @@ class Organization {
 	@Default('')
 	@Index
 	@Required('organizationName is required')
-	@Validate('validateLocalStrategyProperty', 'Please fill in the organization name')
+	@Validate('validateNotEmptyProperty', 'Please fill in the organization name')
 	organizationName;
 
 	@String
@@ -213,8 +213,8 @@ class Organization {
 	/**
 	 * A Validation function for local strategy properties
 	 */
-	validateLocalStrategyProperty(property) {
-	  return ((this.provider !== 'local' && !this.updated) || /^[A-Z]([a-zA-Z0-9]|[- @\.#&!])*$/.test(property));
+	validateNotEmptyProperty(property) {
+	  return property.length;
 	};
 	/**
 	* Validate name format
