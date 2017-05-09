@@ -12,7 +12,8 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   config = require(path.resolve('./config/config')),
   AWS = require('aws-sdk'),
-  _ = require('underscore');
+  _ = require('underscore'),
+  fs = require('fs');
 
 var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
 
