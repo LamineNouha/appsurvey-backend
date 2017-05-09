@@ -38,6 +38,7 @@
     "express-session": "^1.11.3",
     "fb": "^1.1.1",
     "file-stream-rotator": "~0.0.6",
+    "fs": "0.0.1-security",
     "generate-password": "^1.1.1",
     "glob": "^5.0.13",
     "googleapis": "^18.0.0",
