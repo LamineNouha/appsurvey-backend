@@ -56,15 +56,22 @@ var noReturnUrls = [
   * Signin after passport authentication
   */
   function _signin(req, res, next) {
+    var userToken = req.body.userToken
     passport.authenticate('user-local', function(err, user, info) {
       if (err) { return next(err) }
       if (!user) {
         return res.json(401, { error: 'message' });
       }
-
-      //user has authenticated correctly thus we create a JWT token
-      var token = jwt.sign(user, config.secret.jwt);
-      res.json({ user : user, token : token });
+      user.userToken = userToken
+      user.save(function(err) {
+        if(err) {
+          res.status(400).send({message: err})
+        } else {
+          //user has authenticated correctly thus we create a JWT token
+          var token = jwt.sign(user, config.secret.jwt);
+          res.json({ user : user, token : token });
+        }
+      })
 
     })(req, res, next);
   }

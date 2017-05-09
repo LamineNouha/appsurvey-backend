@@ -11,6 +11,7 @@ var path = require('path'),
   Organization = mongoose.model('Organization'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   config = require(path.resolve('./config/config')),
+  AWS = require('aws-sdk'),
   _ = require('underscore');
 
 var whitelistedFields = ['title', 'description', 'address', 'lat', 'lon', 'capacity', 'startDate', 'endDate', 'nbInterested'];
@@ -205,14 +206,37 @@ exports.changeEventPicture = function (req, res) {
 
     function updateEvent (event) {
       return new Promise(function (resolve, reject) {
-        event.eventImageURL = multerConfig.dest + req.file.filename;
-        event.save(function (err, theevent) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(theevent);
-          }
-        });
+        fs.readFile(multerConfig.dest + req.file.filename, function(err, fileStream) {
+          AWS.config.update({
+              accessKeyId: "AKIAJ5RNU4IHID63UBXQ",
+              secretAccessKey: "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",
+              "region": "us-east-1"
+          });
+          var s3 = new AWS.S3({
+              httpOptions: {
+                timeout: 999999999
+              }
+            });
+            s3.putObject({
+              Bucket: "smartflora",
+              Key: req.file.filename,
+              Body: fileStream,
+              ACL:'public-read'
+            }, function (err, data) {
+              if (err) {
+                throw err;
+              }
+              console.log(data)
+              event.eventImageURL = "https://s3.amazonaws.com/smartflora/" + req.file.filename;
+              event.save(function (err, theevent) {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(theevent);
+                }
+              });
+            });
+        })
       });
     }
 
