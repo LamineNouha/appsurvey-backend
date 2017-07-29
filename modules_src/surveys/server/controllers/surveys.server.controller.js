@@ -117,23 +117,23 @@ exports.list = function (req, res) {
 /**
  * Category middleware
  */
-exports.categoryByID = function (req, res, next, id) {
+exports.surveyByID = function (req, res, next, id) {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({
-      message: 'Category is invalid'
+      message: 'Survey is invalid'
     });
   }
 
-  Category.findById(id).exec(function (err, category) {
+  Survey.findById(id).exec(function (err, survey) {
     if (err) {
       return next(err);
-    } else if (!category) {
+    } else if (!survey) {
       return res.status(404).send({
-        message: 'No category with that identifier has been found'
+        message: 'No Survey with that identifier has been found'
       });
     }
-    req.category = category;
+    req.survey = survey;
     next();
   });
 };
