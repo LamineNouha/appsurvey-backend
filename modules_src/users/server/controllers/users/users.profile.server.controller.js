@@ -11,8 +11,6 @@ var _ = require('lodash'),
   multer = require('multer'),
   config = require(path.resolve('./config/config')),
   User = mongoose.model('User'),
-  Organization = mongoose.model('Organization'),
-  Event = mongoose.model('Event'),
   validator = require('validator');
 
 var whitelistedFields = ['firstName', 'lastName', 'email'];
@@ -144,7 +142,7 @@ exports.changeProfilePicture = function (req, res) {
  * Send User
  */
 exports.me = function (req, res) {
-  User.findOne({_id: req.user._doc._id}).populate('events', null, { endDate: { $gt: new Date() } }, { populate: 'organization', sort: { 'startDate': 1 } }).populate('organizations').exec(function(err, user) {
+  User.findOne({_id: req.user._doc._id}).exec(function(err, user) {
     if(err || !user) {
       res.status(400).send(err)
     } else {
@@ -153,104 +151,5 @@ exports.me = function (req, res) {
   })
 };
 
-/**
- * Follow organization
- */
-exports.followOrganization = function(req, res) {
-  var organizationId = req.body.organizationId
-  User.findOne({_id: req.user._doc._id}).populate('organizations').exec(function(err, user) {
-    if(err || !user) {
-      res.status(400).send(err)
-    } else {
-      if (user.organizations.filter(function(e) {return e._id == organizationId}).length <= 0) {
-        Organization.findById(organizationId, function(err, organization) {
-            if(err || !organization) {
-              res.status(400).send('Organization not found');
-            } else {
-              user.organizations.push(organization.id)
-              user.save(function(err) {
-                if(err) {
-                  res.status(400).send(err);
-                } else {
-                  console.log(organization.nbFollowers)
-                  organization.nbFollowers += 1;
-                  organization.save(function(err) {
-                    if(err) {
-                      res.status(400).send(err);
-                    } else {
-                      res.json(user)
-                    }
-                  })
-                }
-              })
-            }
-        })
-      } else {
-        res.status(300).send({"message": "Already following this organization"});
-      }
-    }
-  })
-}
 
-/**
- * Interest in event
- */
-exports.interestEvent = function(req, res) {
-  var eventId = req.body.eventId
-  User.findOne({_id: req.user._doc._id}).populate('events').exec(function(err, user) {
-    if(err || !user) {
-      res.status(400).send(err)
-    } else {
-      if (user.events.filter(function(e) {return e._id == eventId}).length <= 0) {
-        Event.findById(eventId, function(err, event) {
-            if(err || !event) {
-              res.status(400).send('Event not found');
-            } else {
-              user.events.push(event.id)
-              user.save(function(err) {
-                if(err) {
-                  res.status(400).send(err);
-                } else {
-                  console.log(event.nbInterested)
-                  event.nbInterested += 1;
-                  event.save(function(err) {
-                    if(err) {
-                      res.status(400).send(err);
-                    } else {
-                      res.json(user)
-                    }
-                  })
-                }
-              })
-            }
-        })
-      } else {
-        Event.findById(eventId, function(err, event) {
-            if(err || !event) {
-              res.status(400).send('Event not found');
-            } else {
-              user.events = user.events.filter(function(item) {
-                console.log(item._id + "  " + eventId + "   " + (item._id != eventId))
-                return item._id != eventId
-              })
-              user.save(function(err) {
-                if(err) {
-                  res.status(400).send(err);
-                } else {
-                  console.log(event.nbInterested)
-                  event.nbInterested -= 1;
-                  event.save(function(err) {
-                    if(err) {
-                      res.status(400).send(err);
-                    } else {
-                      res.json(user)
-                    }
-                  })
-                }
-              })
-            }
-        })
-      }
-    }
-  })
-}
+

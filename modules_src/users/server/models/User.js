@@ -17,18 +17,7 @@ var mongoose = require('mongoose'),
 @Hook('pre', 'validate', 'testLocalPassword')
 class User {
 
-	@String
-	@Default('')
-	@Validate('validateLocalStrategyProperty', 'Please fill in your first name')
-	firstName;
 
-	@String
-	@Default('')
-	@Validate('validateLocalStrategyProperty', 'Please fill in your last name')
-	lastName;
-
-	@String
-	displayName;
 
 	@String
 	@Default('')
@@ -40,22 +29,11 @@ class User {
 	@Default('')
 	password;
 
-	@String
-	salt;
 
 	@String
 	@Default('modules/users/client/img/profile/default.png')
 	profileImageURL;
 
-	@String
-	@Required('Provider is required')
-	provider;
-
-	@None
-	providerData;
-
-	@None
-	additionalProvidersData;
 
 	@ArrayType
 	@String
@@ -76,13 +54,6 @@ class User {
 	@Date
 	resetPasswordExpires;
 
-	@ArrayType
-	@Ref('Organization')
-	organizations
-
-	@ArrayType
-	@Ref('Event')
-	events
 
 	// ======= Methods =========
 
