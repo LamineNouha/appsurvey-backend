@@ -2,8 +2,8 @@
 
 module.exports = {
   app: {
-    title: 'AppNews',
-    description: 'AppNews Backend',
+    title: 'AppSurvey',
+    description: 'AppSurvey Backend',
     keywords: '',
     googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID'
   },
