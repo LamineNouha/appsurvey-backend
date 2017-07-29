@@ -3,20 +3,20 @@
 /**
  * Module dependencies
  */
-var categories = require('../controllers/categories.server.controller');
+var responses = require('../controllers/responses.server.controller');
 
 module.exports = function (app) {
   // Category collection routes
-  app.route('/api/categories')
-    .get(categories.list)
-    .post(categories.create);
+  app.route('/api/responses')
+    .get(responses.list)
+    .post(responses.create);
 
   // Single category routes
-  app.route('/api/categories/:categoryId')
-    .get(categories.read)
-    .put(categories.update)
-    .delete(categories.delete);
+  app.route('/api/responses/:responseId')
+    .get(responses.read)
+    .put(responses.update)
+    .delete(responses.delete);
 
   // Finish by binding the category middleware
-  app.param('categoryId', categories.categoryByID);
+  app.param('responseId', responses.responseByID);
 };
