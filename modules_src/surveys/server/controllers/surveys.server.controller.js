@@ -6,7 +6,6 @@
 var path = require('path'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
-  Organization = mongoose.model('Organization'),
   multer = require('multer'),
  Survey = mongoose.model('Survey'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
