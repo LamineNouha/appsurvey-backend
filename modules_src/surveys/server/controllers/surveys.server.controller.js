@@ -14,10 +14,10 @@ var path = require('path'),
 var whitelistedFields = ['title'];
 
 /**
- * Create an category
+ * Create an survey
  */
 exports.create = function (req, res) {
-  if(req.user) {
+  
     var survey = new Survey(req.body);
     Survey.create(survey, function(err, survey) {
       if(err || !survey) {
@@ -28,94 +28,94 @@ exports.create = function (req, res) {
         res.json(survey);
       }
     });
-  } else {
-    return res.status(403).send({
-      message: "You need to be authenticated"
-    });
-  }
+  
 };
 
 /**
- * Show a category
+ * Show a survey
  */
 exports.read = function (req, res) {
-  var categoryId = req.params.categoryId
-  Category.findOne({_id: categoryId}).populate('events').sort('-created').exec(function (err, category) {
-    if (err || !category) {
+  var surveyId = req.params.surveyId
+  Survey.findOne({_id: surveyId}).populate('questions').sort('-created').exec(function (err, survey) {
+    if (err || !survey) {
       return res.status(422).send({
-        message: "Cannot find category"
+        message: "Cannot find survey"
       });
     } else {
-      res.json(category);
+      res.json(survey);
     }
   });
 };
 
 /**
- * Update an category
+ * Update an survey
  */
 exports.update = function (req, res) {
-  var category = req.category;
+  var survey = req.survey;
 
-  if(category) {
+  if(survey) {
     // Update whitelisted fields only
-    category = _.extend(category, _.pick(req.body, whitelistedFields));
+    survey = _.extend(survey, _.pick(req.body, whitelistedFields));
 
-    category.updated = Date.now();
+    survey.updated = Date.now();
 
-    category.save(function (err) {
+    survey.save(function (err) {
       if (err) {
         return res.status(422).send({
-          message: "Cannot update category"
+          message: "Cannot update survey"
         });
       } else {
-        res.json(category);
+        res.json(survey);
       }
     });
 
   } else {
     res.status(401).send({
-      message: 'Category not found'
+      message: 'Survey not found'
     });
   }
 
 };
 
 /**
- * Delete an category
+ * Delete an survey
  */
 exports.delete = function (req, res) {
-  var category = req.category;
+  var survey = req.survey;
 
-  category.remove(function (err) {
+  survey.remove(function (err) {
     if (err) {
       return res.status(422).send({
-        message: "Cannot delete category"
+        message: "Cannot delete survey"
       });
     } else {
-      res.json(category);
+      res.json(survey);
     }
   });
 };
 
 /**
- * List of Categories
+ * List of surveys
  */
 exports.list = function (req, res) {
-  Category.find().sort('-created').populate('events').lean().exec(function (err, categories) {
+  var skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  var limit = req.query.limit ? parseInt(req.query.limit) : 15;
+  Survey.find().sort('-created').skip(skip).limit(limit).lean().populate('questions').exec(function (err, surveys) {
     if (err) {
+      console.log(err)
       return res.status(422).send({
-        message: "Cannot list categories"
+        message: "Cannot list surveys"
       });
     } else {
-      console.log(categories.events)
-      res.json(categories);
+   
+        res.json(surveys);
+      
     }
   });
 };
 
 /**
- * Category middleware
+ * Survey middleware
  */
 exports.surveyByID = function (req, res, next, id) {
 
