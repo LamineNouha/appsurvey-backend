@@ -19,6 +19,7 @@ module.exports = function (app, db) {
 
     // Deserialize sessions
     passport.deserializeUser(function (id, done) {
+
         User.findOne({
             _id: id
         }, '-salt -password', function (err, user) {
@@ -27,19 +28,12 @@ module.exports = function (app, db) {
                 return
             }
         });
-
-        Organization.findOne({
-            _id: id
-        }, '-salt -password', function (err, organization) {
-            if (!err && organization) {
-                done(err, organization);
-                return
-            }
-        });
     });
 
     // Initialize strategies
     config.utils.getGlobbedPaths(path.join(__dirname, '../../../**/server/config/strategies/*.js')).forEach(function (strategy) {
+
+        console.log(strategy);
         require(path.resolve(strategy))(config);
     });
 
