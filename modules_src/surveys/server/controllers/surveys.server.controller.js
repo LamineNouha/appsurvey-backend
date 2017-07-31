@@ -3,13 +3,20 @@
 /**
  * Module dependencies
  */
-var path = require('path'),
+
+ 
+  var path = require('path'),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
   multer = require('multer'),
- Survey = mongoose.model('Survey'),
+  Survey = mongoose.model('Survey'),
+  Question = mongoose.model('Question'),
+  Response = mongoose.model('Response'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
-  config = require(path.resolve('./config/config'));
+  config = require(path.resolve('./config/config')),
+  AWS = require('aws-sdk'),
+  _ = require('underscore'),
+  fs = require('fs');
 
 var whitelistedFields = ['title'];
 
@@ -17,7 +24,7 @@ var whitelistedFields = ['title'];
  * Create an survey
  */
 exports.create = function (req, res) {
-  
+  if(req.user) {
     var survey = new Survey(req.body);
     Survey.create(survey, function(err, survey) {
       if(err || !survey) {
@@ -28,7 +35,11 @@ exports.create = function (req, res) {
         res.json(survey);
       }
     });
-  
+   } else {
+    return res.status(403).send({
+      message: "You need to authenticated"
+    });
+  }
 };
 
 /**
@@ -55,6 +66,7 @@ exports.update = function (req, res) {
 
   if(survey) {
     // Update whitelisted fields only
+    console.log("hellllo");
     survey = _.extend(survey, _.pick(req.body, whitelistedFields));
 
     survey.updated = Date.now();
@@ -71,7 +83,7 @@ exports.update = function (req, res) {
 
   } else {
     res.status(401).send({
-      message: 'Survey not found'
+      message: 'survey not found'
     });
   }
 
@@ -82,6 +94,37 @@ exports.update = function (req, res) {
  */
 exports.delete = function (req, res) {
   var survey = req.survey;
+//first we delete for each survey question his responses & then delete survey questions
+    Question.find({survey : survey._id} ).exec(function(err, questions){
+        if(err || !questions) {
+        return res.status(422).send({
+          message: "can't remove questions related to this survey"
+        });
+      }else{
+
+questions.forEach(function(element) {
+   //------------------------
+     Response.find({question : element._id} ).exec(function(err, responses){
+        if(err || !responses) {
+        return res.status(422).send({
+          message: "can't remove responses related to one question of this survey"
+        });
+      }else{
+
+responses.forEach(function(element1) {
+  element1.remove();
+}, this);
+  
+      }
+     });
+    //------------------------
+  element.remove();
+}, this);
+  
+      }
+     });
+
+
 
   survey.remove(function (err) {
     if (err) {

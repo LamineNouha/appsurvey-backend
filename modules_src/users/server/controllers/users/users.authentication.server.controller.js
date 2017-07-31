@@ -75,6 +75,7 @@ function _signin(req, res, next) {
                 //user has authenticated correctly thus we create a JWT token
                 var token = jwt.sign(user, config.secret.jwt);
                 res.json({user: user, token: token});
+                
             }
         })
 

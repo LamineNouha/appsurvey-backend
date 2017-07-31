@@ -23,13 +23,13 @@ var whitelistedFields = ['choice'];
 exports.create = function (req, res) {
   if(req.user) {
     var response = new Response(req.body);
-    Question.findOne({_id: req.user._doc._id}).populate('responses').exec(function(err, question) {
+    Question.findOne({_id: req.body.question}).populate('responses').exec(function(err, question) {
       if(err || !question) {
         return res.status(422).send({
           message: "Question not found"
         });
       } else {
-        response.question = mongoose.Types.ObjectId(req.user._doc._id);
+        response.question = mongoose.Types.ObjectId(req.body.question);
 
         response.save(function (err) {
           if (err) {
@@ -64,13 +64,13 @@ exports.create = function (req, res) {
  */
 exports.read = function (req, res) {
   var responseId = req.params.responseId
-  Response.findOne({_id: responseId}).sort('-created').populate('question').exec(function (err, responses) {
+  Response.findOne({_id: responseId}).sort('-created').populate('question').exec(function (err, response) {
     if (err) {
       return res.status(422).send({
         message: "Cannot find response"
       });
     } else {
-      res.json(responses);
+      res.json(response);
     }
   });
 };
@@ -111,15 +111,35 @@ exports.update = function (req, res) {
 exports.delete = function (req, res) {
   var response = req.response;
 
-  response.remove(function (err) {
-    if (err) {
+//we need to remove the response from the question belong
+        Question.findOne({_id: response.question}).populate('responses').exec(function(err, question) {
+      if(err || !question) {
+        return res.status(422).send({
+          message: "Question on whitch belong this response not found"
+        });
+      } else {
+        //response.question = mongoose.Types.ObjectId(req.body.question);
+
+       response.remove(function (err) {
+      if (err) {
       return res.status(422).send({
         message: "Cannot delete response"
       });
-    } else {
-      res.json(response);
-    }
-  });
+          } else {
+            question.responses.remove(response);
+            question.save(function(err) {
+              if(err) {
+                return res.status(400).send({
+                  message: "Cant save question on whitch belong this response"
+                });
+              } else {
+                res.json(response);
+              }
+            })
+          }
+        });
+      }
+    })
 };
 
 /**

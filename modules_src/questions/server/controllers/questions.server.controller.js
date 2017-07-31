@@ -9,6 +9,7 @@ var path = require('path'),
   multer = require('multer'),
   Question = mongoose.model('Question'),
   Survey = mongoose.model('Survey'),
+  Response = mongoose.model('Response'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   config = require(path.resolve('./config/config')),
   AWS = require('aws-sdk'),
@@ -23,13 +24,13 @@ var whitelistedFields = ['content'];
 exports.create = function (req, res) {
   if(req.user) {
     var question = new Question(req.body);
-    Survey.findOne({_id: req.user._doc._id}).populate('questions').exec(function(err, survey) {
+    Survey.findOne({_id: req.body.survey}).populate('questions').exec(function(err, survey) {
       if(err || !survey) {
         return res.status(422).send({
           message: "Survey not found"
         });
       } else {
-        question.survey = mongoose.Types.ObjectId(req.user._doc._id);
+        question.survey = mongoose.Types.ObjectId(req.body.survey);
 
         question.save(function (err) {
           if (err) {
@@ -110,16 +111,58 @@ exports.update = function (req, res) {
  */
 exports.delete = function (req, res) {
   var question = req.question;
+      
+     Response.find({question : question._id} ).exec(function(err, responses){
+        if(err || !responses) {
+        return res.status(422).send({
+          message: "can't remove responses related to this question"
+        });
+      }else{
+console.log("hey i m here");
+responses.forEach(function(element) {
+  element.remove();
+}, this);
+  
+      }
+     });
 
-  question.remove(function (err) {
-    if (err) {
+//we need to remove the response from the question belong
+        Survey.findOne({_id: question.survey}).populate('responses').exec(function(err, survey) {
+      if(err || !survey) {
+        return res.status(422).send({
+          message: "survey on whitch belong this question not found"
+        });
+      } else {
+        //response.question = mongoose.Types.ObjectId(req.body.question);
+
+       question.remove(function (err) {
+      if (err) {
       return res.status(422).send({
         message: "Cannot delete question"
       });
-    } else {
-      res.json(question);
-    }
-  });
+          } else {
+            //removing the question from the suvey on which it belongs
+            survey.questions.remove(question);
+            survey.save(function(err) {
+              if(err) {
+                return res.status(400).send({
+                  message: "Cant save survey on whitch belong this question"
+                });
+ //deleting all responses belonging to this question
+                 
+       
+ 
+    
+
+          
+              } else {
+                res.json(question);
+              }
+            })
+          }
+        });
+      }
+    })
 };
 
 /**
