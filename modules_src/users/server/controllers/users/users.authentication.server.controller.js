@@ -30,6 +30,9 @@ function _signup(req, res) {
     // Init user and add missing fields
     var user = new User(req.body);
     user.provider = 'local';
+    //7keyet el code par defaut lel les user el kol 
+    user.password="00000000";
+    //7keyet el code par defaut lel les user el kol 
     // change roles
     user.roles = ['user']
     user.displayName = user.firstName + ' ' + user.lastName;
@@ -42,7 +45,7 @@ function _signup(req, res) {
             });
         } else {
             // Remove sensitive data before login
-            user.password = undefined;
+           // user.password = undefined;
             user.salt = undefined;
 
             //user has authenticated correctly thus we create a JWT token

@@ -12,6 +12,9 @@ var _ = require('lodash'),
   config = require(path.resolve('./config/config')),
   User = mongoose.model('User'),
   validator = require('validator');
+  
+  
+ 
 
 var whitelistedFields = ['firstName', 'lastName', 'email'];
 
@@ -150,6 +153,44 @@ exports.me = function (req, res) {
     }
   })
 };
+
+
+/**
+ * List of users
+ */
+exports.list = function (req, res) {
+  var skip = req.query.skip ? parseInt(req.query.skip) : 0;
+  var limit = req.query.limit ? parseInt(req.query.limit) : 15;
+  User.find().sort('-created').skip(skip).limit(limit).lean().populate('users').exec(function (err, users) {
+    if (err) {
+      console.log(err)
+      return res.status(422).send({
+        message: "Cannot list users"
+      });
+    } else {
+   
+        res.json(users);
+      
+    }
+  });
+};
+
+
+/**
+ * Delete user
+ */
+exports.delete = function (req, res) {
+    User.findOne({_id: req.user._doc._id}).exec(function(err, user) {
+    if(err || !user) {
+      res.status(400).send(err)
+    } else {
+      user.remove();
+      res.json(user)
+    }
+  })
+};
+
+ 
 
 
 

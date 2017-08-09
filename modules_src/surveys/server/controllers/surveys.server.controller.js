@@ -180,3 +180,33 @@ exports.surveyByID = function (req, res, next, id) {
     next();
   });
 };
+
+/**
+ * add question to survey
+ */
+exports.addQuestion = function (req, res) {
+  var surveyId = req.params.surveyId;
+  var questionId = req.params.questionId;
+  
+  if (!mongoose.Types.ObjectId.isValid(surveyId)) {
+    return res.status(400).send({
+      message: 'Survey is invalid'
+    });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(questionId)) {
+    return res.status(400).send({
+      message: 'Question is invalid'
+    });
+  }
+
+  Survey.findOne({_id : surveyId} ).exec(function(err, survey){
+        if(err || !survey) {
+        return res.status(422).send({
+          message: "can't find survey"
+        });
+      }else{
+  survey.questions.push(questionId);
+      }
+    })
+};

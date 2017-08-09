@@ -17,6 +17,10 @@ module.exports = function (app) {
     .put(surveys.update)
     .delete(surveys.delete);
 
+     app.route('/api/surveys/:surveyId/:questionId')
+    .put(surveys.addQuestion);
+    
+
   // Finish by binding the survey middleware
   app.param('surveyId', surveys.surveyByID);
 };

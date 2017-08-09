@@ -111,7 +111,7 @@ exports.update = function (req, res) {
  */
 exports.delete = function (req, res) {
   var question = req.question;
-      
+      //first we delete this question responses 
      Response.find({question : question._id} ).exec(function(err, responses){
         if(err || !responses) {
         return res.status(422).send({
@@ -126,7 +126,7 @@ responses.forEach(function(element) {
       }
      });
 
-//we need to remove the response from the question belong
+//searching the survey on whitch belongs this question & deleting the ref of the question
         Survey.findOne({_id: question.survey}).populate('responses').exec(function(err, survey) {
       if(err || !survey) {
         return res.status(422).send({
@@ -141,7 +141,7 @@ responses.forEach(function(element) {
         message: "Cannot delete question"
       });
           } else {
-            //removing the question from the suvey on which it belongs
+            //removing the question from the survey on which it belongs
             survey.questions.remove(question);
             survey.save(function(err) {
               if(err) {

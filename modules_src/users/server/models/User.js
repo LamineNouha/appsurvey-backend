@@ -44,7 +44,7 @@ class User {
 
 
     @String
-    @Default('modules/users/client/img/profile/default.png')
+    @Default('assets/images/placeholder.jpg')
     profileImageURL;
 
 
