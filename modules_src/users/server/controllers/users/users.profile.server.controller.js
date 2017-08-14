@@ -180,7 +180,9 @@ exports.list = function (req, res) {
  * Delete user
  */
 exports.delete = function (req, res) {
-    User.findOne({_id: req.user._doc._id}).exec(function(err, user) {
+  var userId= req.params.userId;
+  console.log("iddd to delete; "+userId);
+    User.findOne({_id: userId}).exec(function(err, user) {
     if(err || !user) {
       res.status(400).send(err)
     } else {

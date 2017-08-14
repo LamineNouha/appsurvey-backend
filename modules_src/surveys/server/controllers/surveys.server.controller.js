@@ -46,7 +46,7 @@ exports.create = function (req, res) {
  * Show a survey
  */
 exports.read = function (req, res) {
-  var surveyId = req.params.surveyId
+  var surveyId = req.params.surveyId;
   Survey.findOne({_id: surveyId}).populate('questions').sort('-created').exec(function (err, survey) {
     if (err || !survey) {
       return res.status(422).send({
