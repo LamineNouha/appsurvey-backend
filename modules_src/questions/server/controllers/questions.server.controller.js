@@ -127,7 +127,7 @@ responses.forEach(function(element) {
      });
 
 //searching the survey on whitch belongs this question & deleting the ref of the question
-        Survey.findOne({_id: question.survey}).populate('responses').exec(function(err, survey) {
+        Survey.findOne({_id: question.survey}).populate('questions').exec(function(err, survey) {
       if(err || !survey) {
         return res.status(422).send({
           message: "survey on whitch belong this question not found"
@@ -171,7 +171,7 @@ responses.forEach(function(element) {
 exports.list = function (req, res) {
   var skip = req.query.skip ? parseInt(req.query.skip) : 0;
   var limit = req.query.limit ? parseInt(req.query.limit) : 15;
-  Question.find().sort('-created').skip(skip).limit(limit).lean().populate('survey').exec(function (err, questions) {
+  Question.find().sort('-created').skip(skip).limit(limit).lean().populate('responses').exec(function (err, questions) {
     if (err) {
       console.log(err)
       return res.status(422).send({
@@ -198,7 +198,7 @@ exports.questionByID = function (req, res, next, id) {
     });
   }
 
-  Question.findById(id).populate('survey').exec(function (err, question) {
+  Question.findById(id).populate('responses').exec(function (err, question) {
     if (err) {
       return next(err);
     } else if (!question) {
