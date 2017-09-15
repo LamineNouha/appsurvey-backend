@@ -8,6 +8,7 @@ var path = require('path'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     User = mongoose.model('User'),
+    Personal = mongoose.model('Personal'),
     jwt = require('jsonwebtoken'),
     config = require('../../../../../config/config'),
     FB = require('fb'),
@@ -30,8 +31,7 @@ function _signup(req, res) {
     // Init user and add missing fields
     var user = new User(req.body);
     user.provider = 'local';
-    //7keyet el code par defaut lel les user el kol 
-    user.password="00000000";
+    
     //7keyet el code par defaut lel les user el kol 
     // change roles
     user.roles = ['user']
@@ -359,10 +359,91 @@ function _signupGoogle(req, res, next) {
 
 }
 
+
+///////// Personal part
+/**
+ * Signup
+ */
+function _signupPer(req, res) {
+    // For security measurement we remove the roles from the req.body object
+    delete req.body.roles;
+
+    // Init user and add missing fields
+    var personal = new Personal(req.body);
+    personal.provider = 'local';
+    //7keyet el code par defaut lel les personals el kol 
+    personal.password="00000000";
+    //7keyet el code par defaut lel les personals el kol 
+    // change roles
+    personal.roles = ['user']
+    personal.displayName = personal.email;
+
+
+    // Then save the user
+    personal.save(function (err) {
+        if (err) {
+            return res.status(422).send({
+                message: errorHandler.getErrorMessage(err)
+            });
+        } else {
+            // Remove sensitive data before login
+           // user.password = undefined;
+           personal.salt = undefined;
+
+            //user has authenticated correctly thus we create a JWT token
+            var token = jwt.sign(personal, config.secret.jwt);
+            res.json({personal: personal, token: token});
+        }
+    });
+}
+
+/**
+ * Signin after passport authentication
+ */
+function _signinPer(req, res, next) {
+    var userToken = req.body.userToken
+    console.log(req.body);
+    passport.authenticate('user-local', function (err, personal, info) {
+
+        if (err) {
+            return next(err)
+        }
+        console.log(personal);
+        if (!user) {
+            return res.json(401, {error: 'message'});
+        }
+        personal.userToken = userToken
+        personal.save(function (err) {
+            if (err) {
+                res.status(400).send({message: err})
+            } else {
+                //user has authenticated correctly thus we create a JWT token
+                var token = jwt.sign(personal, config.secret.jwt);
+                res.json({user: personal, token: token});
+                
+            }
+        })
+
+    })(req, res, next);
+}
+
+/**
+ * Signout
+ */
+var _signoutPer = function (req, res) {
+    req.logout();
+    res.redirect('/');
+}
+
+
+
 var self = module.exports = {
     signup: _signup,
     signin: _signin,
     signout: _signout,
+    signupPer: _signupPer,
+    signinPer: _signinPer,
+    signoutPer: _signoutPer,
     oauthCall: _oauthCall,
     oauthCallback: _oauthCallback,
     saveOAuthUserProfile: _saveOAuthUserProfile,

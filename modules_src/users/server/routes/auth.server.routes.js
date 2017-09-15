@@ -18,6 +18,13 @@ module.exports = function (app) {
   app.route('/api/users/auth/signin').post(users.signin);
   app.route('/api/users/auth/signout').get(users.signout);
 
+
+
+  
+  app.route('/api/users/auth/signupPer').post(users.signupPer);
+  app.route('/api/users/auth/signinPer').post(users.signinPer);
+  app.route('/api/users/auth/signoutPer').get(users.signoutPer);
+
   // Setting the facebook oauth routes
   app.route('/api/users/auth/facebook').get(users.signupFb);
 

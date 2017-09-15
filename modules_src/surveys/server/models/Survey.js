@@ -34,6 +34,10 @@ class Survey{
 	questions;
 
 
+	@Ref('User')
+	user;
+
+
 
 	// ======= Methods =========
 	validateNotEmptyProperty(val) {

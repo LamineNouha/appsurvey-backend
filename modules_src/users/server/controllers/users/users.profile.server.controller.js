@@ -11,6 +11,7 @@ var _ = require('lodash'),
   multer = require('multer'),
   config = require(path.resolve('./config/config')),
   User = mongoose.model('User'),
+  Personal = mongoose.model('Personal'),
   validator = require('validator');
   
   
@@ -155,21 +156,26 @@ exports.me = function (req, res) {
 };
 
 
+
 /**
  * List of users
  */
-exports.list = function (req, res) {
+exports.listPer = function (req, res) {
   var skip = req.query.skip ? parseInt(req.query.skip) : 0;
   var limit = req.query.limit ? parseInt(req.query.limit) : 15;
-  User.find().sort('-created').skip(skip).limit(limit).lean().populate('users').exec(function (err, users) {
+  var userId = req.params.userId;
+  console.info("usssssss id"+userId);
+  
+  
+  Personal.find({user: userId}).sort('-created').skip(skip).limit(limit).lean().exec(function (err, personals) {
     if (err) {
       console.log(err)
       return res.status(422).send({
-        message: "Cannot list users"
+        message: "Cannot list personals"
       });
     } else {
    
-        res.json(users);
+        res.json(personals);
       
     }
   });
@@ -180,17 +186,20 @@ exports.list = function (req, res) {
  * Delete user
  */
 exports.delete = function (req, res) {
-  var userId= req.params.userId;
-  console.log("iddd to delete; "+userId);
-    User.findOne({_id: userId}).exec(function(err, user) {
-    if(err || !user) {
+  var personalId= req.params.personalId;
+  console.log("iddd to delete; "+personalId);
+    Personal.findOne({_id: personalId}).exec(function(err, personal) {
+    if(err || !personal) {
       res.status(400).send(err)
     } else {
-      user.remove();
-      res.json(user)
+      personal.remove();
+      res.json(personal)
     }
   })
 };
+
+
+
 
  
 

@@ -10,11 +10,15 @@ module.exports = function (app) {
   app.route('/api/users/accounts').delete(users.removeOAuthProvider);
   app.route('/api/users/password').post(users.changePassword);
   app.route('/api/users/picture').post(users.changeProfilePicture);
-  app.route('/api/users/list').get(users.list);
-  app.route('/api/users/:userId').delete(users.delete);
+  
+  app.route('/api/users/:userId/listPer').get(users.listPer);
+  app.route('/api/users/:personalId').delete(users.delete);
+
+
  
  
 
   // Finish by binding the user middleware
   app.param('userId', users.userByID);
+  app.param('personalId', users.personalByID);
 };

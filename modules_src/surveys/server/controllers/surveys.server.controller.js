@@ -143,7 +143,8 @@ responses.forEach(function(element1) {
 exports.list = function (req, res) {
   var skip = req.query.skip ? parseInt(req.query.skip) : 0;
   var limit = req.query.limit ? parseInt(req.query.limit) : 15;
-  Survey.find().sort('-created').skip(skip).limit(limit).lean().populate({
+  var userId = req.params.userId;
+  Survey.find({user: userId}).sort('-created').skip(skip).limit(limit).lean().populate({
     path: 'questions',
     model:Question,
     populate: {

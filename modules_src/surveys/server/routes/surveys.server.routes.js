@@ -8,8 +8,9 @@ var surveys = require('../controllers/surveys.server.controller');
 module.exports = function (app) {
   // Survey collection routes
   app.route('/api/surveys')
-    .get(surveys.list)
     .post(surveys.create);
+
+    app.route('/api/surveys/:userId').get(surveys.list);
 
   // Single Survey routes
   app.route('/api/surveys/:surveyId')

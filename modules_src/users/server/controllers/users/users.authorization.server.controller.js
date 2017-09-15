@@ -5,7 +5,8 @@
  */
 var _ = require('lodash'),
   mongoose = require('mongoose'),
-  User = mongoose.model('User');
+  User = mongoose.model('User'),
+  Personal = mongoose.model('Personal');
 
 /**
  * verifies that the client is a user
@@ -39,6 +40,27 @@ exports.userByID = function (req, res, next, id) {
     }
 
     req.profile = user;
+    next();
+  });
+};
+
+exports.personalByID = function (req, res, next, id) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send({
+      message: 'Personal is invalid'
+    });
+  }
+
+  Personal.findOne({
+    _id: id
+  }).exec(function (err, personal) {
+    if (err) {
+      return next(err);
+    } else if (!personal) {
+      return next(new Error('Failed to load Personal ' + id));
+    }
+
+    req.profile = personal;
     next();
   });
 };
