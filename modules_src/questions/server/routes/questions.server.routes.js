@@ -10,6 +10,9 @@ module.exports = function (app) {
   app.route('/api/questions')
     .get(questions.list)
     .post(questions.create);
+  app.route('/api/filledsurveyques')
+    .post(questions.filledcreate);
+    
 
   // Single question routes
   app.route('/api/questions/:questionId')

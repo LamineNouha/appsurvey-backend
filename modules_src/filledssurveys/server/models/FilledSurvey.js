@@ -1,6 +1,6 @@
 'use strict';
 
-import { Virtual, NumberType, Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
+import { Virtual, NumberType, Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType , Date} from '../../../../config/lib/decorators';
 
 var mongoose = require('mongoose'),
 	path = require('path'),
@@ -13,12 +13,14 @@ var mongoose = require('mongoose'),
 
 
 @Model
-class Response {
+class FilledSurvey{
 
 	@String
-	@Required('Choice is required')
-	@Validate('validateNotEmptyProperty', 'Please fill in the response Choice')
-	choice;
+	@Required('Title is required')
+	@Validate('validateNotEmptyProperty', 'Please fill in the survey title')
+	title;
+
+	
 
 	@Date
 	updated;
@@ -26,15 +28,19 @@ class Response {
 	@Date
 	@Default(Date.now)
 	created;
-	
 
+	@ArrayType
 	@Ref('Question')
-	question;
+	questions;
 
-	@NumberType
-	@Required('checked is required')
-	checked;
-	
+
+	@Ref('User')
+	user;
+
+	@Ref('Citizen')
+	citizen;
+
+
 
 	// ======= Methods =========
 	validateNotEmptyProperty(val) {
@@ -43,4 +49,4 @@ class Response {
 
 }
 
-module.exports = Response
+module.exports = FilledSurvey

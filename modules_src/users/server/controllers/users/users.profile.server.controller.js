@@ -164,7 +164,6 @@ exports.listPer = function (req, res) {
   var skip = req.query.skip ? parseInt(req.query.skip) : 0;
   var limit = req.query.limit ? parseInt(req.query.limit) : 15;
   var userId = req.params.userId;
-  console.info("usssssss id"+userId);
   
   
   Personal.find({user: userId}).sort('-created').skip(skip).limit(limit).lean().exec(function (err, personals) {

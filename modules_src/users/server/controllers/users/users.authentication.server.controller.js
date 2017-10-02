@@ -17,7 +17,9 @@ var path = require('path'),
 // URLs for which user can't be redirected on signin
 var noReturnUrls = [
     '/authentication/signin',
-    '/authentication/signup'
+    '/authentication/signup',
+    '/authentication/signinPer',
+    '/authentication/signupPer'
 ];
 
 
@@ -59,7 +61,7 @@ function _signup(req, res) {
  * Signin after passport authentication
  */
 function _signin(req, res, next) {
-    var userToken = req.body.userToken
+    var userToken = req.body.userToken;
     console.log(req.body);
     passport.authenticate('user-local', function (err, user, info) {
 
@@ -401,30 +403,41 @@ function _signupPer(req, res) {
  * Signin after passport authentication
  */
 function _signinPer(req, res, next) {
-    var userToken = req.body.userToken
+    console.info("here you are");
+    var personalToken = req.body.personalToken;
     console.log(req.body);
-    passport.authenticate('user-local', function (err, personal, info) {
+    passport.authenticate('personal-local', function (err, personal, info) {
 
         if (err) {
             return next(err)
         }
         console.log(personal);
-        if (!user) {
+        if (!personal) {
             return res.json(401, {error: 'message'});
         }
-        personal.userToken = userToken
+        personal.personalToken = personalToken
         personal.save(function (err) {
             if (err) {
                 res.status(400).send({message: err})
             } else {
                 //user has authenticated correctly thus we create a JWT token
                 var token = jwt.sign(personal, config.secret.jwt);
-                res.json({user: personal, token: token});
+                res.json({personal: personal, token: token});
                 
             }
         })
 
     })(req, res, next);
+}
+
+
+
+/**
+ * Signout
+ */
+var _signout = function (req, res) {
+    req.logout();
+    res.redirect('/');
 }
 
 /**
