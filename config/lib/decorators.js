@@ -79,6 +79,19 @@ exports.String = function String(target, key , descriptor) {
 
 }
 
+exports.BooleanType = function BooleanType(target, key , descriptor) {
+
+		if(!target.Schema) {
+			target.Schema = {}
+		}
+
+		if(!target.Schema[key])
+			target.Schema[key] = {}
+
+		target.Schema[key].type = Boolean
+
+}
+
 exports.NumberType = function NumberType(target, key , descriptor) {
 
 		if(!target.Schema) {
