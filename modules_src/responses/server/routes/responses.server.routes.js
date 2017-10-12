@@ -9,7 +9,7 @@ module.exports = function (app) {
   // Category collection routes
   app.route('/api/responses')
     .get(responses.list)
-    .post(responses.create);
+   // .post(responses.create);
 
   // Single category routes
   app.route('/api/responses/:responseId')

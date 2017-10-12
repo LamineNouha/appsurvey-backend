@@ -23,6 +23,8 @@ var whitelistedFields = ['title'];
 /**
  * Create an survey
  */
+
+ /*
 exports.create = function (req, res) {
   if(req.user) {
     var filledsurvey = new FilledSurvey(req.body);
@@ -41,6 +43,53 @@ exports.create = function (req, res) {
     });
   }
 };
+
+*/
+
+
+/**
+ * Create an survey
+ */
+exports.create = function (req, res) {
+ 
+console.log("oooooooo ");
+console.log("bodyyyyy"+JSON.stringify(req.body));
+    var survey = new FilledSurvey({title: req.body.nameValuePairs.title,user:  req.body.nameValuePairs.user, citizen:  req.body.nameValuePairs.citizen});
+ 
+     //treating questions
+        var questions =  req.body.nameValuePairs.questions.values;
+        for(var i in questions)
+        {console.log("question "+i);
+          var question = questions[i];
+          //console.log("question "+i+JSON.stringify(question));
+          var quest = new Question({content: question.nameValuePairs.content, survey: survey._id});
+          survey.questions.push(quest)
+         
+          //treating questions
+           var responses = question.nameValuePairs.responses.values;
+           for(var j in responses)
+           {console.log("response "+j);
+           var response = responses[j];
+           var resp = new Response({choice: response.nameValuePairs.choice, question: quest._id, checked: response.nameValuePairs.checked});
+           quest.responses.push(resp)
+
+           resp.save(function (err) {
+          });
+     
+          }
+
+          quest.save(function (err) {
+          });
+
+        }
+
+        survey.save(function (err) {
+        });
+        return res.json(survey);
+   
+  
+};
+
 
 
 /**

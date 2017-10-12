@@ -17,24 +17,56 @@
   AWS = require('aws-sdk'),
   _ = require('underscore'),
   fs = require('fs');
+  var https = require('https');
+  import * as authorization from 'auth-header';
+  var querystring = require('querystring');
 
 var whitelistedFields = ['title'];
+
+
+
 
 /**
  * Create an survey
  */
 exports.create = function (req, res) {
   if(req.user) {
-    var survey = new Survey(req.body);
-    Survey.create(survey, function(err, survey) {
-      if(err || !survey) {
-        res.status(400).send({
-          message: "Bad request"
-        })
-      } else {
-        res.json(survey);
-      }
-    });
+    
+//var auth = authorization.parse(req.get('authorization'));
+console.log("userID "+req.user._doc._id);
+    var survey = new Survey({title: req.body.title,user: req.user._doc._id});
+ 
+     //treating questions
+        var questions = req.body.questions;
+        for(var i in questions)
+        {console.log("question "+i);
+          var question = questions[i];
+          //console.log("question "+i+JSON.stringify(question));
+          var quest = new Question({content: question.content, survey: survey._id});
+          survey.questions.push(quest)
+         
+          //treating questions
+           var responses = question.responses;
+           for(var j in responses)
+           {console.log("response "+j);
+           var response = responses[j];
+           var resp = new Response({choice: response.choice, question: quest._id, checked: false});
+           quest.responses.push(resp)
+
+           resp.save(function (err) {
+          });
+     
+          }
+
+          quest.save(function (err) {
+          });
+
+        }
+
+        survey.save(function (err) {
+        });
+        return res.json(survey);
+   
    } else {
     return res.status(403).send({
       message: "You need to authenticated"

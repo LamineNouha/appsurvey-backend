@@ -1,6 +1,6 @@
 'use strict';
 
-import { Virtual, NumberType, Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date } from '../../../../config/lib/decorators';
+import { Virtual, NumberType, Ref, Model, Hook, Method, Static, String, Default, Validate, Index, Required, None, ArrayType, Date, BooleanType } from '../../../../config/lib/decorators';
 
 var mongoose = require('mongoose'),
 	path = require('path'),
@@ -31,7 +31,7 @@ class Response {
 	@Ref('Question')
 	question;
 
-	@NumberType
+	@BooleanType
 	@Required('checked is required')
 	checked;
 	

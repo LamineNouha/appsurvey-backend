@@ -22,7 +22,9 @@ var whitelistedFields = ['content'];
 /**
  * Create an question
  */
+/*
 exports.create = function (req, res) {
+  console.log("helooooooooooo");
   if(req.user) {
     var question = new Question(req.body);
     Survey.findOne({_id: req.body.survey}).populate('questions').exec(function(err, survey) {
@@ -60,7 +62,7 @@ exports.create = function (req, res) {
     });
   }
 };
-
+*/
 /**
  * Create an question for filled survey
  */

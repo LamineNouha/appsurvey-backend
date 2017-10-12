@@ -9,7 +9,7 @@ module.exports = function (app) {
   // Question collection routes
   app.route('/api/questions')
     .get(questions.list)
-    .post(questions.create);
+    //.post(questions.create);
   app.route('/api/filledsurveyques')
     .post(questions.filledcreate);
     

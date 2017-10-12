@@ -20,6 +20,7 @@ var whitelistedFields = ['choice'];
 /**
  * Create an response
  */
+/*
 exports.create = function (req, res) {
   if(req.user) {
     var response = new Response(req.body);
@@ -58,7 +59,7 @@ exports.create = function (req, res) {
     });
   }
 };
-
+*/
 /**
  * Show the current response
  */
