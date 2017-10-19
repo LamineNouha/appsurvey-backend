@@ -10,12 +10,14 @@ module.exports = function (app) {
   app.route('/api/surveys')
     .post(surveys.create);
 
+   /* app.route('/api/surveys/:surveyId/edit')
+    .post(surveys.edit);
+*/
     app.route('/api/surveys/:userId').get(surveys.list);
 
   // Single Survey routes
   app.route('/api/surveys/:surveyId')
     .get(surveys.read)
-    .put(surveys.update)
     .delete(surveys.delete);
 
   

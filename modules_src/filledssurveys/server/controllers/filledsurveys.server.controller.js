@@ -51,9 +51,7 @@ exports.create = function (req, res) {
  * Create an survey
  */
 exports.create = function (req, res) {
- 
-console.log("oooooooo ");
-console.log("bodyyyyy"+JSON.stringify(req.body));
+
     var survey = new FilledSurvey({title: req.body.nameValuePairs.title,user:  req.body.nameValuePairs.user, citizen:  req.body.nameValuePairs.citizen});
  
      //treating questions

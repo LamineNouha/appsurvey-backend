@@ -75,6 +75,88 @@ console.log("userID "+req.user._doc._id);
 };
 
 /**
+ * Edit an survey
+ */
+/*
+exports.edit = function (req, res) {
+  if(req.user) {
+
+    var surveyId = req.params.surveyId;
+    //delete section
+    //first we delete for each survey question his responses & then delete survey questions
+    Question.find({survey : surveyId} ).exec(function(err, questions){
+
+questions.forEach(function(element) {
+ //------------------------
+   Response.find({question : element._id} ).exec(function(err, responses){
+    
+
+responses.forEach(function(element1) {
+element1.remove();
+}, this);
+
+
+   });
+  //------------------------
+element.remove();
+}, this);
+
+  
+   });
+
+
+
+survey.remove(function (err) {
+});
+
+//delete section
+
+  
+//var auth = authorization.parse(req.get('authorization'));
+console.log("userID "+req.user._doc._id);
+    var survey = new Survey({title: req.body.title,user: req.user._doc._id});
+ 
+     //treating questions
+        var questions = req.body.questions;
+        for(var i in questions)
+        {console.log("question "+i);
+          var question = questions[i];
+          //console.log("question "+i+JSON.stringify(question));
+          var quest = new Question({content: question.content, survey: survey._id});
+          survey.questions.push(quest)
+         
+          //treating questions
+           var responses = question.responses;
+           for(var j in responses)
+           {console.log("response "+j);
+           var response = responses[j];
+           var resp = new Response({choice: response.choice, question: quest._id, checked: false});
+           quest.responses.push(resp)
+
+           resp.save(function (err) {
+          });
+     
+          }
+
+          quest.save(function (err) {
+          });
+
+        }
+
+        survey.save(function (err) {
+        });
+        return res.json(survey);
+   
+   } else {
+    return res.status(403).send({
+      message: "You need to authenticated"
+    });
+  }
+};
+*/
+
+
+/**
  * Show a survey
  */
 exports.read = function (req, res) {
@@ -90,36 +172,7 @@ exports.read = function (req, res) {
   });
 };
 
-/**
- * Update an survey
- */
-exports.update = function (req, res) {
-  var survey = req.survey;
 
-  if(survey) {
-    // Update whitelisted fields only
-    console.log("hellllo");
-    survey = _.extend(survey, _.pick(req.body, whitelistedFields));
-
-    survey.updated = Date.now();
-
-    survey.save(function (err) {
-      if (err) {
-        return res.status(422).send({
-          message: "Cannot update survey"
-        });
-      } else {
-        res.json(survey);
-      }
-    });
-
-  } else {
-    res.status(401).send({
-      message: 'survey not found'
-    });
-  }
-
-};
 
 /**
  * Delete an survey
