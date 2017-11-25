@@ -40,6 +40,12 @@ class FilledSurvey{
 	@Ref('Citizen')
 	citizen;
 
+	@Ref('originalSurveyId')
+	originalSurveyId;
+
+	@Ref('Personal')
+	personal;
+
 
 
 	// ======= Methods =========

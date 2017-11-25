@@ -51,8 +51,8 @@ exports.create = function (req, res) {
  * Create an survey
  */
 exports.create = function (req, res) {
-
-    var survey = new FilledSurvey({title: req.body.nameValuePairs.title,user:  req.body.nameValuePairs.user, citizen:  req.body.nameValuePairs.citizen});
+  console.log("body res "+JSON.stringify(req.body));
+    var survey = new FilledSurvey({title: req.body.nameValuePairs.title,user:  req.body.nameValuePairs.user, citizen:  req.body.nameValuePairs.citizen, originalSurveyId:req.body.nameValuePairs.originalSurveyId, personal:  req.body.nameValuePairs.personal });
  
      //treating questions
         var questions =  req.body.nameValuePairs.questions.values;
