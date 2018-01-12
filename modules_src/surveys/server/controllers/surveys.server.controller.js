@@ -35,7 +35,7 @@ exports.create = function (req, res) {
 //var auth = authorization.parse(req.get('authorization'));
 console.log("userID "+req.user._doc._id);
     var survey = new Survey({title: req.body.title,user: req.user._doc._id});
- 
+        survey.created = Date.now();
      //treating questions
         var questions = req.body.questions;
         for(var i in questions)

@@ -53,7 +53,7 @@ exports.create = function (req, res) {
 exports.create = function (req, res) {
   console.log("body res "+JSON.stringify(req.body));
     var survey = new FilledSurvey({title: req.body.nameValuePairs.title,user:  req.body.nameValuePairs.user, citizen:  req.body.nameValuePairs.citizen, originalSurveyId:req.body.nameValuePairs.originalSurveyId, personal:  req.body.nameValuePairs.personal });
- 
+        survey.created = Date.now();
      //treating questions
         var questions =  req.body.nameValuePairs.questions.values;
         for(var i in questions)
